@@ -1,0 +1,26 @@
+events {}
+
+http {
+	server {
+
+		listen 443 ssl;
+		server_name localhost;
+
+		root /var/www/html;
+		index index.php index.html;
+		
+    	ssl_certificate /etc/nginx/certs/nginx.crt;
+    	ssl_certificate_key /etc/nginx/certs/nginx.key;
+
+		location / {
+			try_files $uri $uri/ /index.php?$args;
+		}
+
+		location ~ \.php$ {
+			fastcgi_pass wp-php:9000;
+			fastcgi_index index.php;
+			fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+			include fastcgi_params;
+		}
+	}
+}

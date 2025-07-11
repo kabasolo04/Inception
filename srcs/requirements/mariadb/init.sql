@@ -1,0 +1,5 @@
+CREATE DATABASE IF NOT EXISTS wordpress CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE USER IF NOT EXISTS 'koldobaik'@'%' IDENTIFIED BY 'koldo123';
+GRANT ALL PRIVILEGES ON wordpress.* TO 'koldobaik'@'%';
+FLUSH PRIVILEGES;

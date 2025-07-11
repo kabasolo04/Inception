@@ -1,0 +1,65 @@
+networks:
+  inception_network:
+    driver: bridge
+
+services:
+  nginx:
+    container_name: nginx
+    build: requirements/nginx/.
+    ports:
+      - "443:443"
+    volumes:
+      - ./requirements/nginx/tools/nginx.crt:/etc/nginx/certs/nginx.crt:ro
+      - ./requirements/nginx/tools/nginx.key:/etc/nginx/certs/nginx.key:ro
+      - wordpress_data:/var/www/html
+    networks:
+      - inception_network
+    depends_on:
+      - wordpress
+
+  wordpress:
+    container_name: wp-php
+    build: requirements/wordpress/.
+    volumes:
+      - wordpress_data:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: mariadb
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_password.txt
+    secrets:
+      - db_password.txt
+    expose:
+      - 9000
+    networks:
+      - inception_network
+    depends_on:
+      - mariadb
+
+  mariadb:
+    container_name: mariadb
+    build: requirements/mariadb/.
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD_FILE: /run/secrets/db_password.txt
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password.txt
+    secrets:
+      - db_password.txt
+      - db_root_password.txt
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    expose:
+      - 3306
+    networks:
+      - inception_network
+
+volumes:
+  wordpress_data:
+  mariadb_data:
+
+secrets:
+  db_password.txt:
+    file: ../secrets/db_password.txt
+  db_root_password.txt:
+    file: ../secrets/db_root_password.txt
