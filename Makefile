@@ -8,32 +8,6 @@ SSl_DIR=srcs/requirements/nginx/tools/
 
 all:
 
-SHELL := /bin/bash
-
-setup:
-	@mkdir -p secrets
-
-	@>srcs/.env
-	@>secrets/credentials.txt
-	
-	@echo "📄 Generating .env and credentials.txt..."
-	@{ \
-		read -p "Enter DB Username: " dbuser; \
-		read -p "Enter MariaDB Username: " mariadb_user; \
-		echo "WORDPRESS_DB_USER=$$dbuser" >> srcs/.env; \
-		echo "MYSQL_USER=$$mariadb_user" >> srcs/.env; \
-		echo "WORDPRESS_DB_USER=$$dbuser" >> secrets/credentials.txt; \
-		echo "MYSQL_USER=$$mariadb_user" >> secrets/credentials.txt; \
-	}
-
-	@echo "🔐 Enter DB Password:"
-	@read dbpass; echo $$dbpass > secrets/db_password.txt
-
-	@echo "🔐 Enter DB Root Password:"
-	@read dbroot; echo $$dbroot > secrets/db_root_password.txt
-
-	@echo "✅ Secrets and env set up!"
-
 ssl:
 	@mkdir -p srcs/requirements/nginx/tools
 
@@ -51,7 +25,7 @@ up:
 
 down:
 	@echo "🔴 Stopping and removing containers..."
-	@$(COMPOSE) $(ENV) down
+	@$(COMPOSE) $(ENV) down -v
 
 start:
 	@echo "🟢 Starting containers..."
@@ -73,5 +47,8 @@ fclean: clean
 	@docker volume rm $(VOLUME) 2>/dev/null || true
 	@docker image prune -af
 	@docker container prune -f
+	@sudo rm -rf /home/$(USER)/data
+
+re: fclean up
 
 rebuild: fclean all

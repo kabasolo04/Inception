@@ -9,8 +9,8 @@ http {
 		root /var/www/html;
 		index index.php index.html;
 		
-    	ssl_certificate /etc/nginx/certs/nginx.crt;
-    	ssl_certificate_key /etc/nginx/certs/nginx.key;
+    	ssl_certificate /run/secrets/selfsigned.crt;
+    	ssl_certificate_key /run/secrets/selfsigned.key;
 
 		location / {
 			try_files $uri $uri/ /index.php?$args;

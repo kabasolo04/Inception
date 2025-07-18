@@ -1,10 +1,7 @@
 #!/bin/sh
 
-# Wait for MariaDB to be ready
-#until mysqladmin ping -h "$WORDPRESS_DB_HOST" --silent; do
-#    echo "Waiting for MariaDB..."
-#    sleep 1
-#done
+DB_PASSWORD=$(cat /run/secrets/db_password)
+WP_ADMIN_PASSWORD=$(cat /run/secrets/db_root_password)
 
 sleep 3
 # Check if WordPress is already installed
@@ -17,28 +14,16 @@ if ! [ -e /var/www/html/wp-config.php ]; then
 
     curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
     chmod +x wp-cli.phar
-    # Download WordPress core files
+
     ./wp-cli.phar core download --allow-root
 
-    # Create wp-config.php with DB credentials
-    ./wp-cli.phar config create \
-        --dbname="$WORDPRESS_DB_NAME" \
-        --dbuser="$WORDPRESS_DB_USER" \
-        --dbpass="$WORDPRESS_DB_PASSWORD" \
-        --dbhost="$WORDPRESS_DB_HOST" \
-        --allow-root
+    ./wp-cli.phar config create --dbname="$DB_NAME" --dbuser="$DB_USER" --dbpass="$DB_PASSWORD" --dbhost=mariadb --allow-root
 
-    # Install WordPress
-    ./wp-cli.phar core install \
-        --url="$WORDPRESS_URL" \
-        --title="$WORDPRESS_TITLE" \
-        --admin_user="$WORDPRESS_ADMIN_USER" \
-        --admin_password="$WORDPRESS_ADMIN_PASSWORD" \
-        --admin_email="$WORDPRESS_ADMIN_EMAIL" \
-        --allow-root
+    ./wp-cli.phar core install --url="$DOMAIN_NAME" --title="$WP_TITLE" --admin_user="$WP_ADMIN_USER" --admin_password="$WP_ADMIN_PASSWORD" --admin_email="$WP_ADMIN_EMAIL" --allow-root
 
-    # Clean up
-    rm wp-cli.phar
+    ./wp-cli.phar user create "$WP_USER_NAME" "$WP_USER_EMAIL" --user_pass="$WP_USER_PASSWORD" --role="$WP_USER_ROLE" --allow-root
+
+
 else
     echo "WordPress already installed."
 fi

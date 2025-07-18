@@ -1,28 +1,19 @@
 #!/bin/sh
 
-# Initialize database if not already
-if [ ! -d /var/lib/mysql/mysql ]; then
-    echo "Initializing MariaDB database..."
-    mariadb-install-db --user=mysql --datadir=/var/lib/mysql
-fi
+set -e
 
-# Start MariaDB in the background
-echo "Starting MariaDB..."
-mysqld --user=mysql --datadir=/var/lib/mysql &
-pid=$!
+# Read secrets from files
+DB_PASSWORD=$(cat /run/secrets/db_password)
 
-# Wait for MariaDB to be ready
-until mysqladmin ping --silent; do
-    echo "Waiting for MariaDB..."
-    sleep 1
-done
+mysql_install_db --user=mysql --ldata=/var/lib/mysql
 
-# Run init.sql once
-if [ -f /init.sql ]; then
-    echo "Running init.sql..."
-    mysql < /init.sql
-    rm /init.sql
-fi
+mkdir -p /etc/mysql
 
-# Wait on the backgrounded MariaDB process
-wait "$pid"
+cat <<EOF > /etc/mysql/init.sql
+CREATE DATABASE IF NOT EXISTS \`$DB_NAME\`;
+CREATE OR REPLACE USER '$DB_USER'@'%' IDENTIFIED BY '$DB_PASSWORD';
+GRANT ALL PRIVILEGES ON *.* TO '$DB_USER'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+EOF
+
+exec mysqld
