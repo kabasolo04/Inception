@@ -14,7 +14,7 @@ Everything is containerized, reproducible, and isolated — all from scratch.
 
 ## 🏁 How to start
 
-Just type `make` / `make all`, and you will have a little display of how to set up and use some commands in order to easily manage the containers.
+Just type `make` / `make all` to see a quick guide on how to set up and manage the containers easily.
 
 ## 🔑 Set up variables
 
