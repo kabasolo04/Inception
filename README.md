@@ -19,12 +19,10 @@ Just type `make` / `make all`, and you will have a little display of how to set 
 ## 🔑 Set up variables
 
 ### `secrets/*.txt`
-|---------------------|----------------------------------------|
 | `DB_PASSWORD`       | MariaDB user password                  |
 | `WP_ADMIN_PASSWORD` | WordPress regular user password        |
 
 ### `srcs/.env`
-|---------------------|----------------------------------------|
 | `DB_NAME`           | MariaDB database name                  |
 | `DB_USER`           | MariaDB user name                      |
 | `DOMAIN_NAME`       | Website domain name                    |
