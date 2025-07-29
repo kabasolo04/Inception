@@ -1,54 +1,94 @@
-NAME=inception
-COMPOSE=docker compose -f srcs/docker-compose.yml
-ENV=--env-file srcs/.env
-VOLUME=wordpress_data
-SSl_DIR=srcs/requirements/nginx/tools/
+NAME        := inception
+SRCSDIR     := srcs
+COMPOSE     := docker compose -f $(SRCSDIR)/docker-compose.yml
+ENV         := --env-file $(SRCSDIR)/.env
+VOLUME      := wordpress_data
+SSL_DIR     := $(SRCSDIR)/requirements/nginx/tools
 
-.PHONY: all up down start stop clean fclean rebuild ssl
+GREEN   := \033[1;32m
+RED     := \033[1;31m
+BLUE    := \033[1;34m
+NC      := \033[0m
 
-all:
+.PHONY: all up down start stop clean fclean rebuild re ssl nuke create-env
+
+all: help
 
 ssl:
-	@mkdir -p srcs/requirements/nginx/tools
-
-	@>$(SSl_DIR)nginx.key
-	@>$(SSl_DIR)nginx.crt
-
-	@echo "🔐 Creating SSL certificate..."
-	@openssl req -x509 -nodes -days 365 -subj "/C=CA/ST=QC/O=C Inc/CN=e.com" -newkey rsa:2048 -keyout $(SSl_DIR)nginx.key -out $(SSl_DIR)nginx.crt
-	
-	@echo "✅ SSL certificate created."
+	@mkdir -p $(SSL_DIR)
+	@>$(SSL_DIR)/nginx.key
+	@>$(SSL_DIR)/nginx.crt
+	@echo "$(BLUE)🔐 Creating SSL certificate...$(NC)"
+	@openssl req -x509 -nodes -days 365 -subj "/C=CA/ST=QC/O=C Inc/CN=e.com" -newkey rsa:2048 \
+		-keyout $(SSL_DIR)/nginx.key -out $(SSL_DIR)/nginx.crt
+	@echo "$(GREEN)✅ SSL certificate created.$(NC)"
 
 up:
-	@echo "🟢 Starting containers..."
+	@echo "$(GREEN)🟢 Starting containers...$(NC)"
 	@$(COMPOSE) $(ENV) up -d --build
 
 down:
-	@echo "🔴 Stopping and removing containers..."
+	@echo "$(RED)🔴 Stopping and removing containers...$(NC)"
 	@$(COMPOSE) $(ENV) down -v
 
 start:
-	@echo "🟢 Starting containers..."
+	@echo "$(GREEN)▶️ Starting containers...$(NC)"
 	@$(COMPOSE) $(ENV) start
 
 stop:
-	@echo "⛔ Stopping containers..."
+	@echo "$(RED)⏹️ Stopping containers...$(NC)"
 	@$(COMPOSE) $(ENV) stop
 
-nuke:		
+nuke:
+	@echo "$(RED)💣 Nuking containers and orphans...$(NC)"
 	@$(COMPOSE) $(ENV) down -v --remove-orphans
 
-clean:
-	@echo "🧹 Removing containers and volumes..."
-	@$(COMPOSE) $(ENV) down -v
+clean: down
+	@echo "$(RED)🧹 Containers and Docker volumes removed.$(NC)"
 
 fclean: clean
-	@echo "🔥 Removing docker images and volumes..."
+	@echo "$(RED)🔥 Removing Docker images and persistent physical volumes...$(NC)"
 	@docker volume rm $(VOLUME) 2>/dev/null || true
 	@docker image prune -af
 	@docker container prune -f
-	@sudo rm -rf /home/$(USER)/data
+	@sudo rm -rf /home/$(USER)/data/database /home/$(USER)/data/wordpress 2>/dev/null || true
+	@echo "$(GREEN)✅ Local persistent data removed safely.$(NC)"
+
+create-env:
+	@echo "$(BLUE)📝 Creating fresh .env file with <replace> values...$(NC)"
+	@echo "DB_NAME=<replace>"                          >  $(SRCSDIR)/.env
+	@echo "DB_USER=<replace>"                          >> $(SRCSDIR)/.env
+	@echo                                              >> $(SRCSDIR)/.env
+	@echo "# Wordpress related environment variables"  >> $(SRCSDIR)/.env
+	@echo "DOMAIN_NAME=<replace>"                      >> $(SRCSDIR)/.env
+	@echo "WP_TITLE=<replace>"                         >> $(SRCSDIR)/.env
+	@echo "WP_ADMIN_USER=<replace>"                    >> $(SRCSDIR)/.env
+	@echo "WP_ADMIN_EMAIL=<replace>"                   >> $(SRCSDIR)/.env
+	@echo                                              >> $(SRCSDIR)/.env
+	@echo "# Wordpress user"                           >> $(SRCSDIR)/.env
+	@echo "WP_USER_NAME=<replace>"                     >> $(SRCSDIR)/.env
+	@echo "WP_USER_EMAIL=<replace>"                    >> $(SRCSDIR)/.env
+	@echo "WP_USER_PASSWORD=<replace>"                 >> $(SRCSDIR)/.env
+	@echo "WP_USER_ROLE=<replace>"                     >> $(SRCSDIR)/.env
+	@echo "$(GREEN)✅ srcs/.env file created.$(NC)"
 
 re: fclean up
 
 rebuild: fclean all
+
+help:
+	@echo ""
+	@echo "🛠️  Available Makefile commands:"
+	@echo "  make up           - Build and start containers"
+	@echo "  make down         - Stop and remove containers and volumes"
+	@echo "  make start        - Start existing (stopped) containers"
+	@echo "  make stop         - Stop running containers"
+	@echo "  make ssl          - Generate SSL certificate for NGINX"
+	@echo "  make create-env   - Create a new srcs/.env with <replace> values"
+	@echo "  make clean        - Stop and remove containers + volumes"
+	@echo "  make fclean       - Like clean + remove images and persistent files"
+	@echo "  make nuke         - Like down but also removes orphans"
+	@echo "  make re           - fclean + up"
+	@echo "  make rebuild      - fclean + all (e.g. build SSL then up)"
+	@echo ""
+
