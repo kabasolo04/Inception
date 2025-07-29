@@ -22,7 +22,7 @@ Just type `make` / `make all` to see a quick guide on how to set up and manage t
 | Key                 | Description                            |
 |---------------------|----------------------------------------|
 | `DB_PASSWORD`       | MariaDB user password                  |
-| `WP_ADMIN_PASSWORD` | WordPress regular user password        |
+| `WP_ADMIN_PASSWORD` | WordPress admin user password          |
 
 ### `srcs/.env`
 | Key                 | Description                            |
