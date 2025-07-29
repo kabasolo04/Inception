@@ -16,15 +16,15 @@ Everything is containerized, reproducible, and isolated — all from scratch.
 
 Just type `make` / `make all`, and you will have a little display of how to set up and use some commands in order to easily manage the containers.
 
-### 🔑 Set up variables
+## 🔑 Set up variables
 
-#### `secrets/*.txt`
+### `secrets/*.txt`
 |---------------------|----------------------------------------|
 | `DB_PASSWORD`       | MariaDB user password                  |
 | `WP_ADMIN_PASSWORD` | WordPress regular user password        |
 |---------------------|----------------------------------------|
 
-#### `srcs/.env`
+### `srcs/.env`
 |---------------------|----------------------------------------|
 | `DB_NAME`           | MariaDB database name                  |
 | `DB_USER`           | MariaDB user name                      |
