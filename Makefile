@@ -86,10 +86,12 @@ rebuild: fclean all
 
 help:
 	@echo ""
-	@echo "🛠️  Available Makefile commands:"
+	@echo "👶  First steps:"
 	@echo "  make ssl          - Generate SSL certificate for NGINX"
 	@echo "  make create-env   - Create a new srcs/.env with <replace> values"
 	@echo "  make secrets      - Create secrets/ folder with placeholder password files"
+	@echo ""
+	@echo "🛠️  Available Makefile commands:"
 	@echo "  make up           - Build and start containers"
 	@echo "  make down         - Stop and remove containers and volumes"
 	@echo "  make start        - Start existing (stopped) containers"
