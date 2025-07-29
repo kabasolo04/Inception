@@ -10,7 +10,7 @@ RED     := \033[1;31m
 BLUE    := \033[1;34m
 NC      := \033[0m
 
-.PHONY: all up down start stop clean fclean rebuild re ssl nuke create-env
+.PHONY: all up down start stop clean fclean rebuild re ssl nuke create-env secrets
 
 all: help
 
@@ -72,6 +72,14 @@ create-env:
 	@echo "WP_USER_ROLE=<replace>"                     >> $(SRCSDIR)/.env
 	@echo "$(GREEN)✅ srcs/.env file created.$(NC)"
 
+secrets:
+	@echo "$(BLUE)🔐 Creating secrets directory and placeholder password files...$(NC)"
+	@mkdir -p secrets
+	@echo "<replace>" > secrets/db_password.txt
+	@echo "<replace>" > secrets/db_root_password.txt
+	@echo "$(GREEN)✅ Secrets created: db_password.txt, db_root_password.txt$(NC)"
+
+
 re: fclean up
 
 rebuild: fclean all
@@ -79,12 +87,13 @@ rebuild: fclean all
 help:
 	@echo ""
 	@echo "🛠️  Available Makefile commands:"
+	@echo "  make ssl          - Generate SSL certificate for NGINX"
+	@echo "  make create-env   - Create a new srcs/.env with <replace> values"
+	@echo "  make secrets      - Create secrets/ folder with placeholder password files"
 	@echo "  make up           - Build and start containers"
 	@echo "  make down         - Stop and remove containers and volumes"
 	@echo "  make start        - Start existing (stopped) containers"
 	@echo "  make stop         - Stop running containers"
-	@echo "  make ssl          - Generate SSL certificate for NGINX"
-	@echo "  make create-env   - Create a new srcs/.env with <replace> values"
 	@echo "  make clean        - Stop and remove containers + volumes"
 	@echo "  make fclean       - Like clean + remove images and persistent files"
 	@echo "  make nuke         - Like down but also removes orphans"
