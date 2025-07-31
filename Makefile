@@ -51,6 +51,7 @@ fclean: clean
 	@docker volume rm $(VOLUME) 2>/dev/null || true
 	@docker image prune -af
 	@docker container prune -f
+	@sudo rm -rf /home/$(USER)/data/web 2>/dev/null || true
 	@sudo rm -rf /home/$(USER)/data/database /home/$(USER)/data/wordpress 2>/dev/null || true
 	@echo "$(GREEN)✅ Local persistent data removed safely.$(NC)"
 
@@ -60,7 +61,6 @@ create-env:
 	@echo "DB_USER=<replace>"                          >> $(SRCSDIR)/.env
 	@echo                                              >> $(SRCSDIR)/.env
 	@echo "# Wordpress related environment variables"  >> $(SRCSDIR)/.env
-	@echo "DOMAIN_NAME=<replace>"                      >> $(SRCSDIR)/.env
 	@echo "WP_TITLE=<replace>"                         >> $(SRCSDIR)/.env
 	@echo "WP_ADMIN_USER=<replace>"                    >> $(SRCSDIR)/.env
 	@echo "WP_ADMIN_EMAIL=<replace>"                   >> $(SRCSDIR)/.env
