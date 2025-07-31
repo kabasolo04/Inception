@@ -10,9 +10,11 @@ RED     := \033[1;31m
 BLUE    := \033[1;34m
 NC      := \033[0m
 
-.PHONY: all up down start stop clean fclean rebuild re ssl nuke create-env secrets
+.PHONY: all up down start stop clean fclean rebuild re ssl nuke create-env secrets setup host
 
 all: help
+
+setup: host ssl create-env secrets
 
 ssl:
 	@mkdir -p $(SSL_DIR)
@@ -60,17 +62,15 @@ create-env:
 	@echo "DB_NAME=<replace>"                          >  $(SRCSDIR)/.env
 	@echo "DB_USER=<replace>"                          >> $(SRCSDIR)/.env
 	@echo                                              >> $(SRCSDIR)/.env
-	@echo "# Wordpress related environment variables"  >> $(SRCSDIR)/.env
-	@echo "WP_TITLE=<replace>"                         >> $(SRCSDIR)/.env
-	@echo "WP_ADMIN_USER=<replace>"                    >> $(SRCSDIR)/.env
-	@echo "WP_ADMIN_EMAIL=<replace>"                   >> $(SRCSDIR)/.env
-	@echo                                              >> $(SRCSDIR)/.env
 	@echo "# Wordpress user"                           >> $(SRCSDIR)/.env
 	@echo "WP_USER_NAME=<replace>"                     >> $(SRCSDIR)/.env
 	@echo "WP_USER_EMAIL=<replace>"                    >> $(SRCSDIR)/.env
 	@echo "WP_USER_PASSWORD=<replace>"                 >> $(SRCSDIR)/.env
-	@echo "WP_USER_ROLE=<replace>"                     >> $(SRCSDIR)/.env
+	@echo "WP_USER_ROLE=author"                        >> $(SRCSDIR)/.env
 	@echo "$(GREEN)✅ srcs/.env file created.$(NC)"
+
+host:
+	@grep -q "kabasolo.42.fr" /etc/hosts || echo "127.0.0.1 kabasolo.42.fr" | sudo tee -a /etc/hosts
 
 secrets:
 	@echo "$(BLUE)🔐 Creating secrets directory and placeholder password files...$(NC)"
@@ -86,7 +86,10 @@ rebuild: fclean all
 
 help:
 	@echo ""
-	@echo "👶  First steps:"
+	@echo "🏁  Automatic setup:"
+	@echo "  make setup"
+	@echo "👶  Individual setup steps:"
+	@echo "  make host		   - Introduces 'kabasolo.42.fr' as a valid host to your machine"
 	@echo "  make ssl          - Generate SSL certificate for NGINX"
 	@echo "  make create-env   - Create a new srcs/.env with <replace> values"
 	@echo "  make secrets      - Create secrets/ folder with placeholder password files"

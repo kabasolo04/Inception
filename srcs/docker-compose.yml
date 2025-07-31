@@ -10,6 +10,8 @@ services:
       - "443:443"
     volumes:
       - /home/${USER}/data/web:/var/www/html
+    env_file:
+      - .env
     secrets:
       - selfsigned.key
       - selfsigned.crt
