@@ -34,7 +34,7 @@ Just type `make` / `make all` to see a quick guide on how to set up and manage t
 | `DB_PASSWORD`       | MariaDB user password                  |
 | `DB_ROOT_PASSWORD`  | MariaDB root password                  |
 
-### `srcs/.env`
+### `srcs/.env` (already set by default)
 | Key                 | Description                            |
 |---------------------|----------------------------------------|
 | `DB_NAME`           | MariaDB database name                  |
