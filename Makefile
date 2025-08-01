@@ -1,5 +1,6 @@
 NAME        := inception
 SRCSDIR     := srcs
+SECRETS		:= secrets
 COMPOSE     := docker compose -f $(SRCSDIR)/docker-compose.yml
 ENV         := --env-file $(SRCSDIR)/.env
 VOLUME      := wordpress_data
@@ -10,11 +11,14 @@ RED     := \033[1;31m
 BLUE    := \033[1;34m
 NC      := \033[0m
 
-.PHONY: all up down start stop clean fclean rebuild re ssl nuke create-env secrets setup host
+.PHONY: all up down start stop clean fclean rebuild re ssl nuke env secrets setup host
 
 all: help
 
-setup: host ssl create-env secrets
+setup: host ssl env secrets
+
+host:
+	@grep -q "kabasolo.42.fr" /etc/hosts || echo "127.0.0.1 kabasolo.42.fr" | sudo tee -a /etc/hosts
 
 ssl:
 	@mkdir -p $(SSL_DIR)
@@ -24,6 +28,30 @@ ssl:
 	@openssl req -x509 -nodes -days 365 -subj "/C=CA/ST=QC/O=C Inc/CN=e.com" -newkey rsa:2048 \
 		-keyout $(SSL_DIR)/nginx.key -out $(SSL_DIR)/nginx.crt
 	@echo "$(GREEN)✅ SSL certificate created.$(NC)"
+
+env:
+	@echo "$(BLUE)📝 Creating fresh .env file with <replace> values...$(NC)"
+	@echo "# Wordpress user"                           > $(SRCSDIR)/.env
+	@echo "WP_USER_NAME=<replace>"                     >> $(SRCSDIR)/.env
+	@echo "WP_USER_EMAIL=<replace>"                    >> $(SRCSDIR)/.env
+	@echo "WP_USER_PASSWORD=<replace>"                 >> $(SRCSDIR)/.env
+	@echo "WP_USER_ROLE=author"                        >> $(SRCSDIR)/.env
+	@echo "$(GREEN)✅ srcs/.env file created.$(NC)"
+
+secrets:
+	@echo "$(BLUE)🔐 Creating secrets directory and placeholder password files...$(NC)"
+	@mkdir -p secrets
+	@echo "DB_NAME=wordpress"                          >  $(SECRETS)/credentials.txt
+	@echo "DB_USER=wpuser"                             >> $(SECRETS)/credentials.txt
+	@echo "DB_HOST=mariadb"                            >> $(SECRETS)/credentials.txt
+	@echo                                              >> $(SECRETS)/credentials.txt
+	@echo "DOMAIN_NAME=kabasolo.42.fr"                 >> $(SECRETS)/credentials.txt
+	@echo "WP_TITLE=mySite"                            >> $(SECRETS)/credentials.txt
+	@echo "WP_ADMIN_USER=<replace>"                    >> $(SECRETS)/credentials.txt
+	@echo "WP_ADMIN_EMAIL=<replace>"                   >> $(SECRETS)/credentials.txt
+	@echo "<replace>" > $(SECRETS)/db_password.txt
+	@echo "<replace>" > $(SECRETS)/db_root_password.txt
+	@echo "$(GREEN)✅ Secrets created: db_password.txt, db_root_password.txt$(NC)"
 
 up:
 	@echo "$(GREEN)🟢 Starting containers...$(NC)"
@@ -57,41 +85,18 @@ fclean: clean
 	@sudo rm -rf /home/$(USER)/data/database /home/$(USER)/data/wordpress 2>/dev/null || true
 	@echo "$(GREEN)✅ Local persistent data removed safely.$(NC)"
 
-create-env:
-	@echo "$(BLUE)📝 Creating fresh .env file with <replace> values...$(NC)"
-	@echo "DB_NAME=<replace>"                          >  $(SRCSDIR)/.env
-	@echo "DB_USER=<replace>"                          >> $(SRCSDIR)/.env
-	@echo                                              >> $(SRCSDIR)/.env
-	@echo "# Wordpress user"                           >> $(SRCSDIR)/.env
-	@echo "WP_USER_NAME=<replace>"                     >> $(SRCSDIR)/.env
-	@echo "WP_USER_EMAIL=<replace>"                    >> $(SRCSDIR)/.env
-	@echo "WP_USER_PASSWORD=<replace>"                 >> $(SRCSDIR)/.env
-	@echo "WP_USER_ROLE=author"                        >> $(SRCSDIR)/.env
-	@echo "$(GREEN)✅ srcs/.env file created.$(NC)"
-
-host:
-	@grep -q "kabasolo.42.fr" /etc/hosts || echo "127.0.0.1 kabasolo.42.fr" | sudo tee -a /etc/hosts
-
-secrets:
-	@echo "$(BLUE)🔐 Creating secrets directory and placeholder password files...$(NC)"
-	@mkdir -p secrets
-	@echo "<replace>" > secrets/db_password.txt
-	@echo "<replace>" > secrets/db_root_password.txt
-	@echo "$(GREEN)✅ Secrets created: db_password.txt, db_root_password.txt$(NC)"
-
-
 re: fclean up
 
 rebuild: fclean all
 
 help:
 	@echo ""
-	@echo "🏁  Automatic setup:"
+	@echo "🏁  Automatic setup: 'you just gotta change the <replace> in the .env'"
 	@echo "  make setup"
 	@echo "👶  Individual setup steps:"
 	@echo "  make host		   - Introduces 'kabasolo.42.fr' as a valid host to your machine"
 	@echo "  make ssl          - Generate SSL certificate for NGINX"
-	@echo "  make create-env   - Create a new srcs/.env with <replace> values"
+	@echo "  make env          - Create a new srcs/.env with <replace> values"
 	@echo "  make secrets      - Create secrets/ folder with placeholder password files"
 	@echo ""
 	@echo "🛠️  Available Makefile commands:"

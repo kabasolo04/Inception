@@ -10,8 +10,6 @@ services:
       - "443:443"
     volumes:
       - /home/${USER}/data/web:/var/www/html
-    env_file:
-      - .env
     secrets:
       - selfsigned.key
       - selfsigned.crt
@@ -27,6 +25,7 @@ services:
       - /home/${USER}/data/web:/var/www/html
     env_file:
       - .env
+      - ../secrets/credentials.txt
     secrets:
       - db_password
       - db_root_password
@@ -42,6 +41,7 @@ services:
     build: requirements/mariadb/.
     env_file:
       - .env
+      - ../secrets/credentials.txt
     secrets:
       - db_password
     volumes:
