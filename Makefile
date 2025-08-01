@@ -5,6 +5,7 @@ COMPOSE     := docker compose -f $(SRCSDIR)/docker-compose.yml
 ENV         := --env-file $(SRCSDIR)/.env
 VOLUME      := wordpress_data
 SSL_DIR     := $(SRCSDIR)/requirements/nginx/tools
+HOST        := kabasolo.42.fr
 
 GREEN   := \033[1;32m
 RED     := \033[1;31m
@@ -18,7 +19,7 @@ all: help
 setup: host ssl env secrets
 
 host:
-	@grep -q "kabasolo.42.fr" /etc/hosts || echo "127.0.0.1 kabasolo.42.fr" | sudo tee -a /etc/hosts
+	@grep -q "$(HOST)" /etc/hosts || echo "127.0.0.1 $(HOST)" | sudo tee -a /etc/hosts
 
 ssl:
 	@mkdir -p $(SSL_DIR)
@@ -31,24 +32,22 @@ ssl:
 
 env:
 	@echo "$(BLUE)📝 Creating fresh .env file with <replace> values...$(NC)"
-	@echo "# Wordpress user"                           > $(SRCSDIR)/.env
-	@echo "WP_USER_NAME=<replace>"                     >> $(SRCSDIR)/.env
-	@echo "WP_USER_EMAIL=<replace>"                    >> $(SRCSDIR)/.env
-	@echo "WP_USER_PASSWORD=<replace>"                 >> $(SRCSDIR)/.env
-	@echo "WP_USER_ROLE=author"                        >> $(SRCSDIR)/.env
+	@echo "DB_NAME=wordpress"                          >  $(SRCSDIR)/.env
+	@echo "DB_USER=wpuser"                             >> $(SRCSDIR)/.env
+	@echo "DB_HOST=mariadb"                            >> $(SRCSDIR)/.env
+	@echo "DOMAIN_NAME=https://$(HOST)"          >> $(SRCSDIR)/.env
+	@echo "WP_TITLE=mySite"                            >> $(SRCSDIR)/.env
 	@echo "$(GREEN)✅ srcs/.env file created.$(NC)"
 
 secrets:
 	@echo "$(BLUE)🔐 Creating secrets directory and placeholder password files...$(NC)"
 	@mkdir -p secrets
-	@echo "DB_NAME=wordpress"                          >  $(SECRETS)/credentials.txt
-	@echo "DB_USER=wpuser"                             >> $(SECRETS)/credentials.txt
-	@echo "DB_HOST=mariadb"                            >> $(SECRETS)/credentials.txt
-	@echo                                              >> $(SECRETS)/credentials.txt
-	@echo "DOMAIN_NAME=kabasolo.42.fr"                 >> $(SECRETS)/credentials.txt
-	@echo "WP_TITLE=mySite"                            >> $(SECRETS)/credentials.txt
+	@echo "WP_USER_NAME=<replace>"                     > $(SECRETS)/credentials.txt
+	@echo "WP_USER_EMAIL=<replace>"                    >> $(SECRETS)/credentials.txt
+	@echo "WP_USER_PASSWORD=<replace>"                 >> $(SECRETS)/credentials.txt
 	@echo "WP_ADMIN_USER=<replace>"                    >> $(SECRETS)/credentials.txt
 	@echo "WP_ADMIN_EMAIL=<replace>"                   >> $(SECRETS)/credentials.txt
+	@echo "WP_ADMIN_PASSWORD=<replace>"                >> $(SECRETS)/credentials.txt
 	@echo "<replace>" > $(SECRETS)/db_password.txt
 	@echo "<replace>" > $(SECRETS)/db_root_password.txt
 	@echo "$(GREEN)✅ Secrets created: db_password.txt, db_root_password.txt$(NC)"
@@ -91,13 +90,13 @@ rebuild: fclean all
 
 help:
 	@echo ""
-	@echo "🏁  Automatic setup: 'you just gotta change the <replace> in the .env'"
+	@echo "🏁  Automatic setup: 'you just gotta change the <replace> in the secrets'"
 	@echo "  make setup"
 	@echo "👶  Individual setup steps:"
 	@echo "  make host		   - Introduces 'kabasolo.42.fr' as a valid host to your machine"
 	@echo "  make ssl          - Generate SSL certificate for NGINX"
-	@echo "  make env          - Create a new srcs/.env with <replace> values"
-	@echo "  make secrets      - Create secrets/ folder with placeholder password files"
+	@echo "  make env          - Create a new srcs/.env
+	@echo "  make secrets      - Create secrets/ folder with placeholders to replace"
 	@echo ""
 	@echo "🛠️  Available Makefile commands:"
 	@echo "  make up           - Build and start containers"

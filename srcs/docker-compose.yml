@@ -28,7 +28,6 @@ services:
       - ../secrets/credentials.txt
     secrets:
       - db_password
-      - db_root_password
     expose:
       - 9000
     networks:
@@ -44,6 +43,7 @@ services:
       - ../secrets/credentials.txt
     secrets:
       - db_password
+      - db_root_password
     volumes:
       - /home/${USER}/data/database:/var/lib/mysql
     expose:
