@@ -16,7 +16,7 @@ Everything is containerized, reproducible, and isolated — all from scratch.
 
 Just type `make` / `make all` to see a quick guide on how to set up and manage the containers easily.
 
-## 🔑 Set up variables (some are already set by default)
+## 🔑 Set up variables
 
 ### `secrets/credentials.txt`
 | Key                 | Description                            |
