@@ -16,7 +16,18 @@ Everything is containerized, reproducible, and isolated — all from scratch.
 
 Just type `make` / `make all` to see a quick guide on how to set up and manage the containers easily.
 
-## 🔑 Set up variables
+## 🔑 Set up variables (some come default setted)
+
+### `secrets/credentials.txt`
+| Key                 | Description                            |
+|---------------------|----------------------------------------|
+| `DB_NAME`           | MariaDB database name                  |
+| `DB_USER`           | MariaDB user name                      |
+| `DB_HOST`           | MariaDB host name                      |
+| `DOMAIN_NAME`       | Website domain name                    |
+| `WP_TITLE`          | WordPress site title                   |
+| `WP_ADMIN_USER`     | WordPress admin user name              |
+| `WP_ADMIN_EMAIL`    | WordPress admin user email             |
 
 ### `secrets/*.txt`
 | Key                 | Description                            |
@@ -27,12 +38,7 @@ Just type `make` / `make all` to see a quick guide on how to set up and manage t
 ### `srcs/.env`
 | Key                 | Description                            |
 |---------------------|----------------------------------------|
-| `DB_NAME`           | MariaDB database name                  |
-| `DB_USER`           | MariaDB user name                      |
-| `DOMAIN_NAME`       | Website domain name                    |
-| `WP_TITLE`          | WordPress site title                   |
-| `WP_ADMIN_USER`     | WordPress admin user name              |
-| `WP_ADMIN_EMAIL`    | WordPress admin user email             |
 | `WP_USER_NAME`      | WordPress regular user name            |
 | `WP_USER_EMAIL`     | WordPress regular user email           |
+| `WP_USER_PASSWORD`  | Wordpress regular user password        |
 | `WP_USER_ROLE`      | WordPress regular user role            |
