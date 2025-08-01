@@ -1,6 +1,6 @@
 NAME        := inception
 SRCSDIR     := srcs
-SECRETS		:= secrets
+SECRETS     := secrets
 COMPOSE     := docker compose -f $(SRCSDIR)/docker-compose.yml
 ENV         := --env-file $(SRCSDIR)/.env
 VOLUME      := wordpress_data
@@ -35,7 +35,7 @@ env:
 	@echo "DB_NAME=wordpress"                          >  $(SRCSDIR)/.env
 	@echo "DB_USER=wpuser"                             >> $(SRCSDIR)/.env
 	@echo "DB_HOST=mariadb"                            >> $(SRCSDIR)/.env
-	@echo "DOMAIN_NAME=https://$(HOST)"          >> $(SRCSDIR)/.env
+	@echo "DOMAIN_NAME=https://$(HOST)"                >> $(SRCSDIR)/.env
 	@echo "WP_TITLE=mySite"                            >> $(SRCSDIR)/.env
 	@echo "$(GREEN)✅ srcs/.env file created.$(NC)"
 
