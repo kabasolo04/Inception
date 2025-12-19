@@ -95,7 +95,7 @@ help:
 	@echo "👶  Individual setup steps:"
 	@echo "  make host		   - Introduces 'kabasolo.42.fr' as a valid host to your machine"
 	@echo "  make ssl          - Generate SSL certificate for NGINX"
-	@echo "  make env          - Create a new srcs/.env
+	@echo "  make env          - Create a new srcs/.env"
 	@echo "  make secrets      - Create secrets/ folder with placeholders to replace"
 	@echo ""
 	@echo "🛠️  Available Makefile commands:"
