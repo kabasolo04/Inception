@@ -17,30 +17,30 @@ Everything is containerized, reproducible, and isolated — all from scratch.
 ## 🏁 Introduction
 
 ### `Automatic setup:`
-| Command             | Description                            |
-|---------------------|----------------------------------------|
-| make setup          | You just gotta change the "replace" in the secrets
+| Command | Description |
+|---------|-------------|
+| make setup | You just gotta change the "replace" in the secrets
 
 ### `Individual setup steps:`
-| Command             | Description                            |
-|---------------------|----------------------------------------|
-| make host           | Introduces 'kabasolo.42.fr' as a valid host to your machine
-| make ssl            | Generate SSL certificate for NGINX
-| make env            | Create a new srcs/.env
-| make secrets        | Create secrets/ folder with placeholders to replace
+| Command | Description |
+|---------|-------------|
+| make host    | Introduces 'kabasolo.42.fr' as a valid host to your machine
+| make ssl     | Generate SSL certificate for NGINX
+| make env     | Create a new srcs/.env
+| make secrets | Create secrets/ folder with placeholders to replace
 
 ### `Available Makefile commands:`
-| Command             | Description                            |
-|---------------------|----------------------------------------|
-| make up             |  Build and start containers
-| make down           |  Stop and remove containers and volumes
-| make start          |  Start existing (stopped) containers
-| make stop           |  Stop running containers
-| make clean          |  Stop and remove containers + volumes
-| make fclean         |  Like clean + remove images and persistent files
-| make nuke           |  Like down but also removes orphans
-| make re             |  fclean + up
-| make rebuild        |  fclean + all (e.g. build SSL then up)
+| Command | Description |
+|---------|-------------|
+| make up      | Build and start containers
+| make down    | Stop and remove containers and volumes
+| make start   | Start existing (stopped) containers
+| make stop    | Stop running containers
+| make clean   | Stop and remove containers + volumes
+| make fclean  | Like clean + remove images and persistent files
+| make nuke    | Like down but also removes orphans
+| make re      | fclean + up
+| make rebuild | fclean + all (e.g. build SSL then up)
 
 You can also just type `make` / `make all` to see all these options in the root of the project page.
 
