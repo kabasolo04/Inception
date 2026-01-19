@@ -48,7 +48,7 @@ You can also just type `make` / `make all` to see all these options in the root 
 
 ### `secrets/credentials.txt`
 | Key | Description |
-|---------------------|----------------------------------------|
+|-----|-------------|
 | `WP_USER_NAME`      | WordPress regular user name
 | `WP_USER_EMAIL`     | WordPress regular user email
 | `WP_USER_PASSWORD`  | Wordpress regular user password
@@ -58,15 +58,15 @@ You can also just type `make` / `make all` to see all these options in the root 
 
 ### `secrets/*.txt`
 | Key | Description |
-|---------------------|----------------------------------------|
-| `DB_PASSWORD`       | MariaDB user password
-| `DB_ROOT_PASSWORD`  | MariaDB root password
+|-----|-------------|
+| `DB_PASSWORD`      | MariaDB user password
+| `DB_ROOT_PASSWORD` | MariaDB root password
 
 ### `srcs/.env` (already set by default)
 | Key | Description |
-|---------------------|----------------------------------------|
-| `DB_NAME`           | MariaDB database name
-| `DB_USER`           | MariaDB user name
-| `DB_HOST`           | MariaDB host name
-| `DOMAIN_NAME`       | Website domain name
-| `WP_TITLE`          | WordPress site title
+|-----|-------------|
+| `DB_NAME`     | MariaDB database name
+| `DB_USER`     | MariaDB user name
+| `DB_HOST`     | MariaDB host name
+| `DOMAIN_NAME` | Website domain name
+| `WP_TITLE`    | WordPress site title
