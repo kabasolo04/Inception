@@ -26,17 +26,17 @@ Everything is containerized, reproducible, and isolated — all from scratch.
   make secrets      - Create secrets/ folder with placeholders to replace
 
 ### `Available Makefile commands:`
-| Key                 | Description                            |
+| Command             | Description                            |
 |---------------------|----------------------------------------|
-  make up           - Build and start containers
-  make down         - Stop and remove containers and volumes
-  make start        - Start existing (stopped) containers
-  make stop         - Stop running containers
-  make clean        - Stop and remove containers + volumes
-  make fclean       - Like clean + remove images and persistent files
-  make nuke         - Like down but also removes orphans
-  make re           - fclean + up
-  make rebuild      - fclean + all (e.g. build SSL then up)
+| make up             |  Build and start containers
+| make down           |  Stop and remove containers and volumes
+| make start          |  Start existing (stopped) containers
+| make stop           |  Stop running containers
+| make clean          |  Stop and remove containers + volumes
+| make fclean         |  Like clean + remove images and persistent files
+| make nuke           |  Like down but also removes orphans
+| make re             |  fclean + up
+| make rebuild        |  fclean + all (e.g. build SSL then up)
 
 You can also just type `make` / `make all` to see all these options in the root of the project page.
 
