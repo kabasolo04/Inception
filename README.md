@@ -17,21 +17,21 @@ Everything is containerized, reproducible, and isolated — all from scratch.
 ## 🏁 Introduction
 
 ### `Automatic setup:`
-| Command | Description |
-|---------|-------------|
+| Command    | Description |
+|------------|-------------|
 | make setup | You just gotta change the "replace" in the secrets
 
 ### `Individual setup steps:`
-| Command | Description |
-|---------|-------------|
+| Command      | Description |
+|--------------|-------------|
 | make host    | Introduces 'kabasolo.42.fr' as a valid host to your machine
 | make ssl     | Generate SSL certificate for NGINX
 | make env     | Create a new srcs/.env
 | make secrets | Create secrets/ folder with placeholders to replace
 
 ### `Available Makefile commands:`
-| Command | Description |
-|---------|-------------|
+| Command      | Description |
+|--------------|-------------|
 | make up      | Build and start containers
 | make down    | Stop and remove containers and volumes
 | make start   | Start existing (stopped) containers
@@ -47,8 +47,8 @@ You can also just type `make` / `make all` to see all these options in the root 
 ## 🔑 Set up variables
 
 ### `secrets/credentials.txt`
-| Key | Description |
-|-----|-------------|
+| Key                 | Description |
+|---------------------|-------------|
 | `WP_USER_NAME`      | WordPress regular user name
 | `WP_USER_EMAIL`     | WordPress regular user email
 | `WP_USER_PASSWORD`  | Wordpress regular user password
@@ -57,14 +57,14 @@ You can also just type `make` / `make all` to see all these options in the root 
 | `WP_ADMIN_PASSWORD` | WordPress admin user password
 
 ### `secrets/*.txt`
-| Key | Description |
-|-----|-------------|
+| Key                | Description |
+|--------------------|-------------|
 | `DB_PASSWORD`      | MariaDB user password
 | `DB_ROOT_PASSWORD` | MariaDB root password
 
 ### `srcs/.env` (already set by default)
-| Key | Description |
-|-----|-------------|
+| Key           | Description |
+|---------------|-------------|
 | `DB_NAME`     | MariaDB database name
 | `DB_USER`     | MariaDB user name
 | `DB_HOST`     | MariaDB host name
