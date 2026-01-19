@@ -1,6 +1,6 @@
 # 🐳 Inception - 42 Project
 
-*This project has been created as part of the 42 curriculum by <kabasolo>.*
+*This project has been created as part of the 42 curriculum by kabasolo.*
 
 ## Description
 
@@ -17,7 +17,7 @@ Everything is containerized, reproducible, and isolated — all from scratch.
 ## 🏁 How to start
 
 🏁  Automatic setup:
-  make setup        - You just gotta change the <replace> in the secrets
+  make setup        - You just gotta change the "<replace>" in the secrets
 
 👶  Individual setup steps:
   make host         - Introduces 'kabasolo.42.fr' as a valid host to your machine
