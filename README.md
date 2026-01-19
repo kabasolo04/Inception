@@ -17,13 +17,17 @@ Everything is containerized, reproducible, and isolated — all from scratch.
 ## 🏁 How to start
 
 ### `Automatic setup:`
-  make setup        - You just gotta change the "replace" in the secrets
+| Command             | Description                            |
+|---------------------|----------------------------------------|
+| make setup          | You just gotta change the "replace" in the secrets
 
 ### `Individual setup steps:`
-  make host         - Introduces 'kabasolo.42.fr' as a valid host to your machine
-  make ssl          - Generate SSL certificate for NGINX
-  make env          - Create a new srcs/.env
-  make secrets      - Create secrets/ folder with placeholders to replace
+| Command             | Description                            |
+|---------------------|----------------------------------------|
+| make host           | Introduces 'kabasolo.42.fr' as a valid host to your machine
+| make ssl            | Generate SSL certificate for NGINX
+| make env            | Create a new srcs/.env
+| make secrets        | Create secrets/ folder with placeholders to replace
 
 ### `Available Makefile commands:`
 | Command             | Description                            |
