@@ -4,15 +4,21 @@
 
 ## Description
 
-This project consists of setting up a **Docker-based infrastructure** composed of multiple containers, each running different services, and configured to work together as a full WordPress web server.
+This project consists of setting up a **Docker-based infrastructure** composed of multiple containers, each running a specific service and configured to work together as a complete **WordPress web server**.
 
-You'll build a multi-service system using **Docker Compose**, managing:
+The infrastructure is built using **Docker Compose**, which allows defining, running, and managing multiple containers as a single application. Each service is built from its own **Dockerfile**, using a minimal base image, and follows the rule of **one service per container**. The project includes the configuration and source files required to run:
 
-- **Nginx** with SSL
-- **WordPress + PHP-FPM**  
-- **MariaDB**  
+- **Nginx** as a reverse proxy with SSL (TLS)
+- **WordPress** running with **PHP-FPM**
+- **MariaDB** as the database server
 
-Everything is containerized, reproducible, and isolated — all from scratch.
+Docker is used instead of traditional **virtual machines** because containers are lighter, faster to start, and share the host kernel while still providing strong process isolation. Unlike virtual machines, Docker does not require running a full operating system per service, making it more efficient and better suited for microservice architectures.
+
+Sensitive information such as database credentials is handled using **Docker secrets** rather than environment variables. Secrets are not exposed in images or container inspection, making them a safer choice for managing confidential data.
+
+All containers communicate through a **custom Docker network**, ensuring isolated internal communication between services without exposing them directly to the host network. This improves security and control compared to using the host network.
+
+For data persistence, **Docker volumes** are used instead of bind mounts. Volumes are managed by Docker, are portable across systems, and avoid tight coupling with the host filesystem, making the infrastructure more robust and reproducible.
 
 ## 🏁 Introduction
 
