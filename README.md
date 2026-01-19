@@ -26,6 +26,8 @@ Everything is containerized, reproducible, and isolated — all from scratch.
   make secrets      - Create secrets/ folder with placeholders to replace
 
 ### `Available Makefile commands:`
+| Key                 | Description                            |
+|---------------------|----------------------------------------|
   make up           - Build and start containers
   make down         - Stop and remove containers and volumes
   make start        - Start existing (stopped) containers
