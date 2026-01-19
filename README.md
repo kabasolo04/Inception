@@ -1,8 +1,10 @@
 # 🐳 Inception - 42 Project
 
-This project consists of setting up a **Docker-based infrastructure** composed of multiple containers, each running different services, and configured to work together as a full WordPress web server.
+*This project has been created as part of the 42 curriculum by <kabasolo>.*
 
-## 📦 Project Overview
+## Description
+
+This project consists of setting up a **Docker-based infrastructure** composed of multiple containers, each running different services, and configured to work together as a full WordPress web server.
 
 You'll build a multi-service system using **Docker Compose**, managing:
 
@@ -14,7 +16,27 @@ Everything is containerized, reproducible, and isolated — all from scratch.
 
 ## 🏁 How to start
 
-Just type `make` / `make all` to see a quick guide on how to set up and manage the containers easily.
+🏁  Automatic setup:
+  make setup        - You just gotta change the <replace> in the secrets
+
+👶  Individual setup steps:
+  make host         - Introduces 'kabasolo.42.fr' as a valid host to your machine
+  make ssl          - Generate SSL certificate for NGINX
+  make env          - Create a new srcs/.env
+  make secrets      - Create secrets/ folder with placeholders to replace
+
+🛠️  Available Makefile commands:
+  make up           - Build and start containers
+  make down         - Stop and remove containers and volumes
+  make start        - Start existing (stopped) containers
+  make stop         - Stop running containers
+  make clean        - Stop and remove containers + volumes
+  make fclean       - Like clean + remove images and persistent files
+  make nuke         - Like down but also removes orphans
+  make re           - fclean + up
+  make rebuild      - fclean + all (e.g. build SSL then up)
+
+You can also just type `make` / `make all` to see all these options in the root of the project page.
 
 ## 🔑 Set up variables
 
