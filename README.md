@@ -128,4 +128,4 @@ Specifically, AI was used for:
 
 All Dockerfiles, configuration files, scripts, and infrastructure choices were written, tested, and validated manually to ensure full understanding of the project requirements.
 
-[⬆ Back to 📖 Index](#-index)
+[⬆ Back to top](#)
