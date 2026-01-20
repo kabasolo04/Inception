@@ -76,3 +76,48 @@ You can also just type `make` / `make all` to see all these options in the root 
 | `DB_HOST`     | MariaDB host name
 | `DOMAIN_NAME` | Website domain name
 | `WP_TITLE`    | WordPress site title
+
+## 📚 Resources
+
+### 🔗 Documentation & References
+
+The following resources were used to understand the concepts and technologies required for this project:
+
+- Docker Documentation  
+  https://docs.docker.com/
+
+- Docker Compose Documentation  
+  https://docs.docker.com/compose/
+
+- Nginx Official Documentation  
+  https://nginx.org/en/docs/
+
+- WordPress Documentation  
+  https://wordpress.org/support/
+
+- MariaDB Documentation  
+  https://mariadb.org/documentation/
+
+- *Inception Guide — Part I* (Medium)  
+  https://medium.com/@ssterdev/inception-guide-42-project-part-i-7e3af15eb671
+
+- *Inception Guide — Part II* (Medium)  
+  https://medium.com/@ssterdev/inception-42-project-part-ii-19a06962cf3b
+
+Additionally, several **open-source repositories on GitHub** were consulted for inspiration on structuring the project, service configuration, and best practices when using Docker Compose in a 42-style setup.
+
+These references were used to design the infrastructure, configure services correctly, and follow best practices regarding containerization, networking, and security.
+
+---
+
+### 🤖 AI Usage
+
+AI tools were used **as a learning and assistance resource**, not as a replacement for implementation.
+
+Specifically, AI was used for:
+- Clarifying Docker and Docker Compose concepts
+- Understanding differences between virtualization and containerization
+- Improving documentation structure and wording
+- Reviewing configuration logic and design decisions
+
+All Dockerfiles, configuration files, scripts, and infrastructure choices were written, tested, and validated manually to ensure full understanding of the project requirements.
