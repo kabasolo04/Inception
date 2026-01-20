@@ -56,7 +56,7 @@ For data persistence, **Docker volumes** are used instead of bind mounts. Volume
 
 You can also just type `make` / `make all` to see all these options in the root of the project page.
 
-### 🔑 Set up variables
+### `Set up variables`
 
 #### `secrets/credentials.txt`
 | Key                 | Description |
