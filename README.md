@@ -8,8 +8,8 @@
 
 - [📦 Description](#-description)
 - [🏁 Introduction](#-introduction)
-- [📚 Resources](#-resources)
 - [🔧 Set up variables](#-set-up-variables)
+- [📚 Resources](#-resources)
 
 ## 📦 Description
 
@@ -28,6 +28,8 @@ Sensitive information such as database credentials is handled using **Docker sec
 All containers communicate through a **custom Docker network**, ensuring isolated internal communication between services without exposing them directly to the host network. This improves security and control compared to using the host network.
 
 For data persistence, **Docker volumes** are used instead of bind mounts. Volumes are managed by Docker, are portable across systems, and avoid tight coupling with the host filesystem, making the infrastructure more robust and reproducible.
+
+[⬆ Back to top](#top)
 
 ## 🏁 Introduction
 
@@ -86,6 +88,8 @@ You can also just type `make` / `make all` to see all these options in the root 
 | `DOMAIN_NAME` | Website domain name
 | `WP_TITLE`    | WordPress site title
 
+[⬆ Back to top](#top)
+
 ## 📚 Resources
 
 ### 🔗 Documentation & References
@@ -116,6 +120,8 @@ The following resources were used to understand the concepts and technologies re
 Additionally, several **open-source repositories on GitHub** were consulted for inspiration on structuring the project, service configuration, and best practices when using Docker Compose in a 42-style setup.
 
 These references were used to design the infrastructure, configure services correctly, and follow best practices regarding containerization, networking, and security.
+
+[⬆ Back to top](#top)
 
 ---
 
