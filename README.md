@@ -4,9 +4,9 @@
 
 ## Index
 
-- [📦 Description](#description)
-- [🏁 Introduction](#introduction)
-- [📚 Resources](#resources)
+- [📦 Description](#Description)
+- [🏁 Introduction](Introduction)
+- [📚 Resources](#Resources)
 
 ## 📦 Description
 
