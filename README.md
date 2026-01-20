@@ -29,7 +29,7 @@ All containers communicate through a **custom Docker network**, ensuring isolate
 
 For data persistence, **Docker volumes** are used instead of bind mounts. Volumes are managed by Docker, are portable across systems, and avoid tight coupling with the host filesystem, making the infrastructure more robust and reproducible.
 
-[⬆ Back to top](#top)
+[⬆ Back to 📖 Index](#top)
 
 ## 🏁 Introduction
 
@@ -61,6 +61,8 @@ For data persistence, **Docker volumes** are used instead of bind mounts. Volume
 
 You can also just type `make` / `make all` to see all these options in the root of the project page.
 
+[⬆ Back to 📖 Index](#top)
+
 ## 🔧 Set up variables
 
 ### `secrets/credentials.txt`
@@ -88,7 +90,7 @@ You can also just type `make` / `make all` to see all these options in the root 
 | `DOMAIN_NAME` | Website domain name
 | `WP_TITLE`    | WordPress site title
 
-[⬆ Back to top](#top)
+[⬆ Back to 📖 Index](#top)
 
 ## 📚 Resources
 
@@ -121,7 +123,7 @@ Additionally, several **open-source repositories on GitHub** were consulted for 
 
 These references were used to design the infrastructure, configure services correctly, and follow best practices regarding containerization, networking, and security.
 
-[⬆ Back to top](#top)
+[⬆ Back to 📖 Index](#top)
 
 ---
 
@@ -137,4 +139,4 @@ Specifically, AI was used for:
 
 All Dockerfiles, configuration files, scripts, and infrastructure choices were written, tested, and validated manually to ensure full understanding of the project requirements.
 
-[⬆ Back to top](#top)
+[⬆ Back to 📖 Index](#top)
