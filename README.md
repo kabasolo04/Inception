@@ -9,7 +9,7 @@
 - [📦 Description](#-description)
 - [🏁 Introduction](#-introduction)
 - [📚 Resources](#-resources)
-- [🔧 Set up variables](#-set_up_variables)
+- [🔧 Set up variables](#-set-up-variables)
 
 ## 📦 Description
 
