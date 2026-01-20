@@ -56,9 +56,9 @@ For data persistence, **Docker volumes** are used instead of bind mounts. Volume
 
 You can also just type `make` / `make all` to see all these options in the root of the project page.
 
-## 🔑 Set up variables
+### 🔑 Set up variables
 
-### `secrets/credentials.txt`
+#### `secrets/credentials.txt`
 | Key                 | Description |
 |---------------------|-------------|
 | `WP_USER_NAME`      | WordPress regular user name
@@ -68,13 +68,13 @@ You can also just type `make` / `make all` to see all these options in the root 
 | `WP_ADMIN_EMAIL`    | WordPress admin user email
 | `WP_ADMIN_PASSWORD` | WordPress admin user password
 
-### `secrets/*.txt`
+#### `secrets/*.txt`
 | Key                | Description |
 |--------------------|-------------|
 | `DB_PASSWORD`      | MariaDB user password
 | `DB_ROOT_PASSWORD` | MariaDB root password
 
-### `srcs/.env` (already set by default)
+#### `srcs/.env` (already set by default)
 | Key           | Description |
 |---------------|-------------|
 | `DB_NAME`     | MariaDB database name
