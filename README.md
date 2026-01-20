@@ -2,6 +2,12 @@
 
 *This project has been created as part of the 42 curriculum by kabasolo.*
 
+## Index
+
+- [📦 Description](#description)
+- [🏁 Introduction](#introduction)
+- [📚 Resources](#resources)
+
 ## 📦 Description
 
 This project consists of setting up a **Docker-based infrastructure** composed of multiple containers, each running a specific service and configured to work together as a complete **WordPress web server**.
