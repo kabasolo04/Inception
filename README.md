@@ -2,7 +2,7 @@
 
 *This project has been created as part of the 42 curriculum by kabasolo.*
 
-## Index
+## 📖 Index
 
 - [📦 Description](#-description)
 - [🏁 Introduction](#-introduction)
@@ -127,3 +127,5 @@ Specifically, AI was used for:
 - Reviewing configuration logic and design decisions
 
 All Dockerfiles, configuration files, scripts, and infrastructure choices were written, tested, and validated manually to ensure full understanding of the project requirements.
+
+[⬆ Back to 📖 Index](#-index)
