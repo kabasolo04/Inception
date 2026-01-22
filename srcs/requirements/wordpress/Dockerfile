@@ -1,6 +1,6 @@
 FROM alpine:3.22
 
-RUN apk add --no-cache openrc php php-phar php-fpm php-mysqli php-mbstring curl
+RUN apk add --no-cache openrc php php-phar php-fpm php-mysqli php-mbstring curl netcat-openbsd
 
 COPY conf/wp.conf /etc/php83/php-fpm.d/www.conf
 COPY tools/php.ini /etc/php83/

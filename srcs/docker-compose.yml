@@ -2,12 +2,26 @@ networks:
   inception_network:
     driver: bridge
 
+volumes:
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/${USER}/data/web
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/${USER}/data/database
+
 services:
   nginx:
     container_name: nginx
     build: requirements/nginx/.
     ports:
-      - "443:443"
+      - "8443:443"
     volumes:
       - wordpress_data:/var/www/html
     env_file:
@@ -49,10 +63,6 @@ services:
       - 3306
     networks:
       - inception_network
-
-volumes:
-  wordpress_data:
-  mariadb_data:
 
 secrets:
   db_password:

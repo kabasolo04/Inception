@@ -312,56 +312,71 @@ docker compose -f srcs/docker-compose.yml up -d --scale wordpress=2
 
 ### Volume Strategy
 
-This project uses **Docker named volumes** for data persistence. Named volumes are managed by Docker and are more portable than bind mounts.
+This project uses **host bind mounts** for data persistence. Bind mounts directly link host directories to container directories, making data easily accessible and verifiable.
 
 ### Data Locations
 
-| Service | Container Path | Docker Volume | Purpose |
-|---------|---------------|---------------|---------|
-| WordPress | `/var/www/html` | `inception_wordpress_data` | WordPress files, themes, plugins |
-| MariaDB | `/var/lib/mysql` | `inception_mariadb_data` | Database files |
+| Service | Container Path | Host Path | Purpose |
+|---------|---------------|-----------|---------|
+| WordPress | `/var/www/html` | `/home/$USER/data/web` | WordPress files, themes, plugins |
+| MariaDB | `/var/lib/mysql` | `/home/$USER/data/database` | Database files |
 
 ### docker-compose.yml Configuration
 
 ```yaml
-volumes:
-  wordpress_data:
-  mariadb_data:
-
 services:
   wordpress:
     volumes:
-      - wordpress_data:/var/www/html
+      - /home/${USER}/data/web:/var/www/html
   
   mariadb:
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - /home/${USER}/data/database:/var/lib/mysql
 ```
 
-### Viewing Docker Volumes
+### Verifying Volumes with docker inspect
+
+**Check that volumes are properly mounted:**
 
 ```bash
-# List all volumes
-docker volume ls
+# Inspect WordPress container
+docker inspect wp-php --format='{{json .Mounts}}' | python3 -m json.tool
 
-# Inspect specific volume
-docker volume inspect inception_wordpress_data
-docker volume inspect inception_mariadb_data
-
-# View volume location on host
-docker volume inspect inception_wordpress_data --format='{{.Mountpoint}}'
+# Inspect MariaDB container
+docker inspect mariadb --format='{{json .Mounts}}' | python3 -m json.tool
 ```
+
+You should see output showing:
+```json
+{
+  "Type": "bind",
+  "Source": "/home/kabasolo/data/web",
+  "Destination": "/var/www/html",
+  "Mode": "rw",
+  "RW": true,
+  "Propagation": "rprivate"
+}
+```
+
+**Or use grep for simpler output:**
+
+```bash
+docker inspect wp-php | grep -A 10 "Source"
+docker inspect mariadb | grep -A 10 "Source"
+```
+
+This will show the `/home/kabasolo/data/` paths proving volumes are correctly mounted.
 
 ### Data Lifecycle
 
 **On first `make up`:**
 ```bash
-# Docker creates named volumes automatically
-docker volume create inception_wordpress_data
-docker volume create inception_mariadb_data
+# Directories are created automatically
+mkdir -p /home/$USER/data/web
+mkdir -p /home/$USER/data/database
 
-# WordPress installation populates the volume
-# MariaDB initialization populates the volume
+# WordPress installation populates /data/web/
+# MariaDB initialization populates /data/database/
 ```
 
 **Data persists through:**
@@ -370,23 +385,22 @@ docker volume create inception_mariadb_data
 - Container crashes/restarts
 
 **Data is removed by:**
-- `make fclean` (includes volume cleanup)
-- Manual deletion: `docker volume rm inception_wordpress_data inception_mariadb_data`
+- `make fclean` (deletes host directories)
+- Manual deletion: `sudo rm -rf ~/data/`
 
-### Accessing Volume Data on Host
+### Direct Access to Volume Data
 
-By default, Docker volumes are stored in:
+Since bind mounts use host paths, you can access data directly:
+
 ```bash
-/var/lib/docker/volumes/
-```
+# List WordPress files
+ls -lh ~/data/web/
 
-**Find the actual location:**
-```bash
-# Get full path to WordPress volume
-docker volume inspect inception_wordpress_data --format='{{.Mountpoint}}'
+# List database files
+ls -lh ~/data/database/
 
-# Get full path to Database volume
-docker volume inspect inception_mariadb_data --format='{{.Mountpoint}}'
+# Check total size
+du -sh ~/data/
 ```
 
 ### Backup Strategy
@@ -396,11 +410,11 @@ docker volume inspect inception_mariadb_data --format='{{.Mountpoint}}'
 # Stop containers to ensure consistency
 make stop
 
-# Backup WordPress volume
-docker run --rm -v inception_wordpress_data:/data -v $(pwd):/backup alpine tar czf /backup/wordpress-backup.tar.gz -C /data .
+# Backup WordPress files
+tar -czf backup-wordpress-$(date +%Y%m%d).tar.gz ~/data/web/
 
-# Backup database volume
-docker run --rm -v inception_mariadb_data:/data -v $(pwd):/backup alpine tar czf /backup/database-backup.tar.gz -C /data .
+# Backup database files
+tar -czf backup-database-$(date +%Y%m%d).tar.gz ~/data/database/
 
 # Restart containers
 make start
@@ -413,10 +427,8 @@ BACKUP_DIR="/backups/inception"
 mkdir -p $BACKUP_DIR
 
 docker compose -f srcs/docker-compose.yml stop
-
-docker run --rm -v inception_wordpress_data:/data -v $BACKUP_DIR:/backup alpine tar czf /backup/web-$(date +%Y%m%d-%H%M).tar.gz -C /data .
-docker run --rm -v inception_mariadb_data:/data -v $BACKUP_DIR:/backup alpine tar czf /backup/db-$(date +%Y%m%d-%H%M).tar.gz -C /data .
-
+tar -czf $BACKUP_DIR/web-$(date +%Y%m%d-%H%M).tar.gz ~/data/web/
+tar -czf $BACKUP_DIR/db-$(date +%Y%m%d-%H%M).tar.gz ~/data/database/
 docker compose -f srcs/docker-compose.yml start
 ```
 
@@ -426,15 +438,11 @@ docker compose -f srcs/docker-compose.yml start
 # Stop containers
 make down
 
-# Create fresh volumes
-docker volume create inception_wordpress_data
-docker volume create inception_mariadb_data
-
 # Restore WordPress files
-docker run --rm -v inception_wordpress_data:/data -v $(pwd):/backup alpine tar xzf /backup/wordpress-backup.tar.gz -C /data
+tar -xzf backup-wordpress-20260122.tar.gz -C ~/
 
 # Restore database
-docker run --rm -v inception_mariadb_data:/data -v $(pwd):/backup alpine tar xzf /backup/database-backup.tar.gz -C /data
+tar -xzf backup-database-20260122.tar.gz -C ~/
 
 # Start containers
 make up
@@ -450,6 +458,23 @@ docker exec mariadb mysqldump -u root -p$(cat secrets/db_root_password.txt) word
 **Import database:**
 ```bash
 cat backup.sql | docker exec -i mariadb mysql -u root -p$(cat secrets/db_root_password.txt) wordpress
+```
+
+### File Permissions
+
+**Checking ownership:**
+```bash
+ls -ld ~/data/web/
+ls -ld ~/data/database/
+```
+
+**Fixing permissions:**
+```bash
+# WordPress files should be writable
+sudo chown -R $(id -u):$(id -g) ~/data/web/
+
+# Database files
+sudo chown -R $(id -u):$(id -g) ~/data/database/
 ```
 ---
 

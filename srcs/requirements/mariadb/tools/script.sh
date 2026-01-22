@@ -6,6 +6,10 @@ set -e
 DB_PASSWORD=$(cat /run/secrets/db_password)
 DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
 
+# Fix permissions for mounted volume
+chown -R mysql:mysql /var/lib/mysql
+chmod -R 755 /var/lib/mysql
+
 mysql_install_db --user=mysql --ldata=/var/lib/mysql
 
 mkdir -p /etc/mysql

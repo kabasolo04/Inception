@@ -8,6 +8,15 @@ else
     WP_URL="https://${DOMAIN_NAME}"
 fi
 
+# Wait for MariaDB to be ready
+echo "Waiting for MariaDB to be ready..."
+until nc -z -v -w30 $DB_HOST 3306
+do
+  echo "Waiting for database connection..."
+  sleep 2
+done
+echo "MariaDB is ready!"
+
 sleep 3
 
 # Check if WordPress is already installed
@@ -36,6 +45,15 @@ if ! [ -e /var/www/html/wp-config.php ]; then
         --admin_email="$WP_ADMIN_EMAIL" --allow-root
 
     ./wp-cli.phar user create "$WP_USER_NAME" "$WP_USER_EMAIL" --user_pass="$WP_USER_PASSWORD" --role="author" --allow-root
+
+    # Disable email notifications (no mail server configured)
+    echo "Disabling email notifications..."
+    ./wp-cli.phar option update comments_notify 0 --allow-root
+    ./wp-cli.phar option update moderation_notify 0 --allow-root
+
+    # Fix permissions
+    chown -R nobody:nobody /var/www/html/wp-content/
+    chmod -R 755 /var/www/html/wp-content/
 
 else
     echo "WordPress already installed."

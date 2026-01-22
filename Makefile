@@ -44,6 +44,11 @@ secrets:
 	@echo "$(GREEN)✅ Secrets created: db_password.txt, db_root_password.txt$(NC)"
 
 up:
+	@echo "$(GREEN)🟢 Creating data directories...$(NC)"
+	@sudo mkdir -p /home/$(USER)/data/web
+	@sudo mkdir -p /home/$(USER)/data/database
+	@sudo chown -R $(USER):$(USER) /home/$(USER)/data/
+	@sudo chmod -R 755 /home/$(USER)/data/
 	@echo "$(GREEN)🟢 Starting containers...$(NC)"
 	@$(COMPOSE) $(ENV) up -d --build
 
@@ -64,7 +69,10 @@ nuke:
 	@$(COMPOSE) $(ENV) down -v --remove-orphans
 
 clean: down
-	@echo "$(RED)🧹 Containers and Docker volumes removed.$(NC)"
+	@echo "$(RED)🧹 Removing persistent data directories...$(NC)"
+	@sudo rm -rf /home/$(USER)/data/web 2>/dev/null || true
+	@sudo rm -rf /home/$(USER)/data/database 2>/dev/null || true
+	@echo "$(GREEN)✅ Containers, volumes, and persistent data removed.$(NC)"
 
 fclean: clean
 	@echo "$(RED)🔥 Removing Docker images and persistent physical volumes...$(NC)"
