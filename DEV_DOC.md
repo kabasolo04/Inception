@@ -312,38 +312,56 @@ docker compose -f srcs/docker-compose.yml up -d --scale wordpress=2
 
 ### Volume Strategy
 
-This project uses **host bind mounts** instead of named Docker volumes for easier access and backup.
+This project uses **Docker named volumes** for data persistence. Named volumes are managed by Docker and are more portable than bind mounts.
 
 ### Data Locations
 
-| Service | Container Path | Host Path | Purpose |
-|---------|---------------|-----------|---------|
-| WordPress | `/var/www/html` | `/home/$USER/data/web` | WordPress files, themes, plugins |
-| MariaDB | `/var/lib/mysql` | `/home/$USER/data/database` | Database files |
+| Service | Container Path | Docker Volume | Purpose |
+|---------|---------------|---------------|---------|
+| WordPress | `/var/www/html` | `inception_wordpress_data` | WordPress files, themes, plugins |
+| MariaDB | `/var/lib/mysql` | `inception_mariadb_data` | Database files |
 
 ### docker-compose.yml Configuration
 
 ```yaml
+volumes:
+  wordpress_data:
+  mariadb_data:
+
 services:
   wordpress:
     volumes:
-      - /home/${USER}/data/web:/var/www/html
+      - wordpress_data:/var/www/html
   
   mariadb:
     volumes:
-      - /home/${USER}/data/database:/var/lib/mysql
+      - mariadb_data:/var/lib/mysql
+```
+
+### Viewing Docker Volumes
+
+```bash
+# List all volumes
+docker volume ls
+
+# Inspect specific volume
+docker volume inspect inception_wordpress_data
+docker volume inspect inception_mariadb_data
+
+# View volume location on host
+docker volume inspect inception_wordpress_data --format='{{.Mountpoint}}'
 ```
 
 ### Data Lifecycle
 
 **On first `make up`:**
 ```bash
-# Directories are created automatically
-mkdir -p /home/$USER/data/web
-mkdir -p /home/$USER/data/database
+# Docker creates named volumes automatically
+docker volume create inception_wordpress_data
+docker volume create inception_mariadb_data
 
-# WordPress installation populates /data/web/
-# MariaDB initialization populates /data/database/
+# WordPress installation populates the volume
+# MariaDB initialization populates the volume
 ```
 
 **Data persists through:**
@@ -352,8 +370,87 @@ mkdir -p /home/$USER/data/database
 - Container crashes/restarts
 
 **Data is removed by:**
-- `make fclean` (deletes host directories)
-- Manual deletion: `sudo rm -rf ~/data/`
+- `make fclean` (includes volume cleanup)
+- Manual deletion: `docker volume rm inception_wordpress_data inception_mariadb_data`
+
+### Accessing Volume Data on Host
+
+By default, Docker volumes are stored in:
+```bash
+/var/lib/docker/volumes/
+```
+
+**Find the actual location:**
+```bash
+# Get full path to WordPress volume
+docker volume inspect inception_wordpress_data --format='{{.Mountpoint}}'
+
+# Get full path to Database volume
+docker volume inspect inception_mariadb_data --format='{{.Mountpoint}}'
+```
+
+### Backup Strategy
+
+**Manual Backup:**
+```bash
+# Stop containers to ensure consistency
+make stop
+
+# Backup WordPress volume
+docker run --rm -v inception_wordpress_data:/data -v $(pwd):/backup alpine tar czf /backup/wordpress-backup.tar.gz -C /data .
+
+# Backup database volume
+docker run --rm -v inception_mariadb_data:/data -v $(pwd):/backup alpine tar czf /backup/database-backup.tar.gz -C /data .
+
+# Restart containers
+make start
+```
+
+**Automated Backup Script:**
+```bash
+#!/bin/bash
+BACKUP_DIR="/backups/inception"
+mkdir -p $BACKUP_DIR
+
+docker compose -f srcs/docker-compose.yml stop
+
+docker run --rm -v inception_wordpress_data:/data -v $BACKUP_DIR:/backup alpine tar czf /backup/web-$(date +%Y%m%d-%H%M).tar.gz -C /data .
+docker run --rm -v inception_mariadb_data:/data -v $BACKUP_DIR:/backup alpine tar czf /backup/db-$(date +%Y%m%d-%H%M).tar.gz -C /data .
+
+docker compose -f srcs/docker-compose.yml start
+```
+
+### Restore from Backup
+
+```bash
+# Stop containers
+make down
+
+# Create fresh volumes
+docker volume create inception_wordpress_data
+docker volume create inception_mariadb_data
+
+# Restore WordPress files
+docker run --rm -v inception_wordpress_data:/data -v $(pwd):/backup alpine tar xzf /backup/wordpress-backup.tar.gz -C /data
+
+# Restore database
+docker run --rm -v inception_mariadb_data:/data -v $(pwd):/backup alpine tar xzf /backup/database-backup.tar.gz -C /data
+
+# Start containers
+make up
+```
+
+### Database Export/Import
+
+**Export database:**
+```bash
+docker exec mariadb mysqldump -u root -p$(cat secrets/db_root_password.txt) wordpress > backup.sql
+```
+
+**Import database:**
+```bash
+cat backup.sql | docker exec -i mariadb mysql -u root -p$(cat secrets/db_root_password.txt) wordpress
+```
 ---
 
 ## Architecture Overviewker exec mariadb mysqldump -u root -p$(cat secrets/db_root_password.txt) wordpress > backup.sql

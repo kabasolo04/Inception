@@ -9,7 +9,7 @@ services:
     ports:
       - "443:443"
     volumes:
-      - /home/${USER}/data/web:/var/www/html
+      - wordpress_data:/var/www/html
     env_file:
       - .env
     networks:
@@ -21,7 +21,7 @@ services:
     container_name: wp-php
     build: requirements/wordpress/.
     volumes:
-      - /home/${USER}/data/web:/var/www/html
+      - wordpress_data:/var/www/html
     env_file:
       - .env
       - ../secrets/credentials.txt
@@ -44,7 +44,7 @@ services:
       - db_password
       - db_root_password
     volumes:
-      - /home/${USER}/data/database:/var/lib/mysql
+      - mariadb_data:/var/lib/mysql
     expose:
       - 3306
     networks:

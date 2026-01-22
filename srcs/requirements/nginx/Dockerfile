@@ -6,8 +6,6 @@ COPY conf/nginx.conf /etc/nginx/nginx.conf
 COPY tools/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh && mkdir -p /etc/nginx/ssl
 
-#CMD ["nginx", "-g", "daemon off;"]
-
 EXPOSE 443
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
