@@ -9,6 +9,9 @@
 - [📦 Description](#-description)
 - [🏁 Introduction](#-introduction)
 - [📚 Resources](#-resources)
+- [🤖 AI Usage] (#-ai-usage)
+
+---
 
 ## 📦 Description
 
@@ -29,6 +32,8 @@ All containers communicate through a **custom Docker network**, ensuring isolate
 For data persistence, **Docker volumes** are used instead of bind mounts. Volumes are managed by Docker, are portable across systems, and avoid tight coupling with the host filesystem, making the infrastructure more robust and reproducible.
 
 [⬆ Back to 📖 Index](#top)
+
+---
 
 ## 🏁 Introduction
 
@@ -61,6 +66,8 @@ For data persistence, **Docker volumes** are used instead of bind mounts. Volume
 You can also just type `make` / `make all` to see all these options in the root of the project page.
 
 [⬆ Back to 📖 Index](#top)
+
+---
 
 ## 📚 Resources
 
