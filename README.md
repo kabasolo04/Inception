@@ -9,7 +9,7 @@
 - [📦 Description](#-description)
 - [🏁 Introduction](#-introduction)
 - [📚 Resources](#-resources)
-- [🤖 AI Usage] (#-ai-usage)
+- [🤖 AI Usage](#-ai-usage)
 
 ---
 
