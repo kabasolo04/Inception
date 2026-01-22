@@ -21,23 +21,23 @@ host:
 	@grep -q "$(HOST)" /etc/hosts || echo "127.0.0.1 $(HOST)" | sudo tee -a /etc/hosts
 
 env:
-	@echo "$(BLUE)📝 Creating fresh .env file with <replace> values...$(NC)"
+	@echo "$(BLUE)📝 Creating fresh .env file with default values...$(NC)"
 	@echo "DB_NAME=wordpress"   >  $(SRCSDIR)/.env
 	@echo "DB_USER=wpuser"      >> $(SRCSDIR)/.env
 	@echo "DB_HOST=mariadb"     >> $(SRCSDIR)/.env
 	@echo "DOMAIN_NAME=$(HOST)" >> $(SRCSDIR)/.env
 	@echo "WP_TITLE=mySite"     >> $(SRCSDIR)/.env
-	@echo "WP_PORT=443"         >> $(SRCSDIR)/.env
+	@echo "#WP_PORT=443"        >> $(SRCSDIR)/.env
 	@echo "$(GREEN)✅ srcs/.env file created.$(NC)"
 
 secrets:
 	@echo "$(BLUE)🔐 Creating secrets directory and placeholder password files...$(NC)"
 	@mkdir -p secrets
-	@echo "WP_USER_NAME=kabasolo"                          >  $(SECRETS)/credentials.txt
-	@echo "WP_USER_EMAIL=kolodbikaabasolo@gmail.com"       >> $(SECRETS)/credentials.txt
+	@echo "WP_USER_NAME=example"                          >  $(SECRETS)/credentials.txt
+	@echo "WP_USER_EMAIL=example@example.com"       >> $(SECRETS)/credentials.txt
 	@echo "WP_USER_PASSWORD=$$(openssl rand -base64 12)"   >> $(SECRETS)/credentials.txt
-	@echo "WP_ADMIN_USER=koldo"                            >> $(SECRETS)/credentials.txt
-	@echo "WP_ADMIN_EMAIL=kolodbikaabasolo@gmail.com"      >> $(SECRETS)/credentials.txt
+	@echo "WP_ADMIN_USER=example"                            >> $(SECRETS)/credentials.txt
+	@echo "WP_ADMIN_EMAIL=example@example.com"      >> $(SECRETS)/credentials.txt
 	@echo "WP_ADMIN_PASSWORD=$$(openssl rand -base64 12)"  >> $(SECRETS)/credentials.txt
 	@echo "$$(openssl rand -base64 16)"                    >  $(SECRETS)/db_root_password.txt
 	@echo "$$(openssl rand -base64 16)"                    >  $(SECRETS)/db_password.txt

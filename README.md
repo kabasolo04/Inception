@@ -8,7 +8,6 @@
 
 - [📦 Description](#-description)
 - [🏁 Introduction](#-introduction)
-- [🔧 Set up variables](#-set-up-variables)
 - [📚 Resources](#-resources)
 
 ## 📦 Description
@@ -60,35 +59,6 @@ For data persistence, **Docker volumes** are used instead of bind mounts. Volume
 | make rebuild | fclean + all (e.g. build SSL then up)
 
 You can also just type `make` / `make all` to see all these options in the root of the project page.
-
-[⬆ Back to 📖 Index](#top)
-
-## 🔧 Set up variables
-
-### `secrets/credentials.txt`
-| Key                 | Description |
-|---------------------|-------------|
-| `WP_USER_NAME`      | WordPress regular user name
-| `WP_USER_EMAIL`     | WordPress regular user email
-| `WP_USER_PASSWORD`  | Wordpress regular user password
-| `WP_ADMIN_USER`     | WordPress admin user name
-| `WP_ADMIN_EMAIL`    | WordPress admin user email
-| `WP_ADMIN_PASSWORD` | WordPress admin user password
-
-### `secrets/*.txt`
-| Key                | Description |
-|--------------------|-------------|
-| `DB_PASSWORD`      | MariaDB user password
-| `DB_ROOT_PASSWORD` | MariaDB root password
-
-### `srcs/.env` (already set by default)
-| Key           | Description |
-|---------------|-------------|
-| `DB_NAME`     | MariaDB database name
-| `DB_USER`     | MariaDB user name
-| `DB_HOST`     | MariaDB host name
-| `DOMAIN_NAME` | Website domain name
-| `WP_TITLE`    | WordPress site title
 
 [⬆ Back to 📖 Index](#top)
 
