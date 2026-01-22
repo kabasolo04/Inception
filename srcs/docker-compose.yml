@@ -10,9 +10,8 @@ services:
       - "443:443"
     volumes:
       - /home/${USER}/data/web:/var/www/html
-    secrets:
-      - selfsigned.key
-      - selfsigned.crt
+    env_file:
+      - .env
     networks:
       - inception_network
     depends_on:
@@ -56,10 +55,6 @@ volumes:
   mariadb_data:
 
 secrets:
-  selfsigned.key:
-    file: requirements/nginx/tools/nginx.key
-  selfsigned.crt:
-    file: requirements/nginx/tools/nginx.crt
   db_password:
     file: ../secrets/db_password.txt
   db_root_password:
