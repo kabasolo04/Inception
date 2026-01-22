@@ -46,7 +46,6 @@ For data persistence, **Docker volumes** are used instead of bind mounts. Volume
 | Command      | Description |
 |--------------|-------------|
 | make host    | Introduces 'kabasolo.42.fr' as a valid host to your machine
-| make ssl     | Generate SSL certificate for NGINX
 | make env     | Create a new srcs/.env
 | make secrets | Create secrets/ folder with placeholders to replace
 

@@ -34,13 +34,13 @@ secrets:
 	@echo "$(BLUE)🔐 Creating secrets directory and placeholder password files...$(NC)"
 	@mkdir -p secrets
 	@echo "WP_USER_NAME=example"                          >  $(SECRETS)/credentials.txt
-	@echo "WP_USER_EMAIL=example@example.com"       >> $(SECRETS)/credentials.txt
-	@echo "WP_USER_PASSWORD=$$(openssl rand -base64 12)"   >> $(SECRETS)/credentials.txt
-	@echo "WP_ADMIN_USER=example"                            >> $(SECRETS)/credentials.txt
-	@echo "WP_ADMIN_EMAIL=example@example.com"      >> $(SECRETS)/credentials.txt
-	@echo "WP_ADMIN_PASSWORD=$$(openssl rand -base64 12)"  >> $(SECRETS)/credentials.txt
-	@echo "$$(openssl rand -base64 16)"                    >  $(SECRETS)/db_root_password.txt
-	@echo "$$(openssl rand -base64 16)"                    >  $(SECRETS)/db_password.txt
+	@echo "WP_USER_EMAIL=example@example.com"             >> $(SECRETS)/credentials.txt
+	@echo "WP_USER_PASSWORD=$$(openssl rand -base64 12)"  >> $(SECRETS)/credentials.txt
+	@echo "WP_ADMIN_USER=example"                         >> $(SECRETS)/credentials.txt
+	@echo "WP_ADMIN_EMAIL=example@example.com"            >> $(SECRETS)/credentials.txt
+	@echo "WP_ADMIN_PASSWORD=$$(openssl rand -base64 12)" >> $(SECRETS)/credentials.txt
+	@echo "$$(openssl rand -base64 16)"                   >  $(SECRETS)/db_root_password.txt
+	@echo "$$(openssl rand -base64 16)"                   >  $(SECRETS)/db_password.txt
 	@echo "$(GREEN)✅ Secrets created: db_password.txt, db_root_password.txt$(NC)"
 
 up:
