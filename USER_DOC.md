@@ -1,5 +1,7 @@
 # 📘 User Documentation - Inception Project
 
+**Repository:** [https://github.com/kabasolo04/Inception](https://github.com/kabasolo04/Inception)
+
 ## Welcome! 👋
 
 This guide will help you set up and use the Inception WordPress infrastructure. No Docker expertise required - just follow the steps!
@@ -36,7 +38,7 @@ make --version
 ### Step 1: Clone the Project
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/kabasolo04/Inception.git
 cd Inception
 ```
 
@@ -56,13 +58,15 @@ This single command will:
 Open `secrets/credentials.txt` and verify your WordPress users:
 
 ```
-WP_USER_NAME=kabasolo
-WP_USER_EMAIL=kolodbikaabasolo@gmail.com
+WP_USER_NAME=example
+WP_USER_EMAIL=example@example.com
 WP_USER_PASSWORD=<randomly-generated>
-WP_ADMIN_USER=koldo
-WP_ADMIN_EMAIL=kolodbikaabasolo@gmail.com
+WP_ADMIN_USER=example
+WP_ADMIN_EMAIL=example@example.com
 WP_ADMIN_PASSWORD=<randomly-generated>
 ```
+
+**⚠️ Important:** Replace `example` values with your actual username and email before running `make up`!
 
 **💡 Tip:** Save these credentials somewhere safe! You'll need them to log into WordPress.
 
@@ -98,13 +102,13 @@ https://kabasolo.42.fr
 ### WordPress Admin Dashboard
 
 1. Navigate to: `https://kabasolo.42.fr/wp-admin`
-2. Username: `koldo` (or value from `WP_ADMIN_USER`)
+2. Username: `example` (or your custom value from `WP_ADMIN_USER`)
 3. Password: Check `secrets/credentials.txt` for `WP_ADMIN_PASSWORD`
 
 ### Regular User Account
 
 1. Navigate to: `https://kabasolo.42.fr/wp-login.php`
-2. Username: `kabasolo` (or value from `WP_USER_NAME`)
+2. Username: `example` (or your custom value from `WP_USER_NAME`)
 3. Password: Check `secrets/credentials.txt` for `WP_USER_PASSWORD`
 
 ---
