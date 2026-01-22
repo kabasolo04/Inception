@@ -4,19 +4,382 @@
 
 ## 📑 Table of Contents
 
-1. [Architecture Overview](#architecture-overview)
-2. [Services Breakdown](#services-breakdown)
-3. [Docker Configuration](#docker-configuration)
-4. [Network & Volumes](#network--volumes)
-5. [Security Implementation](#security-implementation)
-6. [Build Process](#build-process)
-7. [Development Workflow](#development-workflow)
-8. [Debugging Guide](#debugging-guide)
-9. [Code Structure](#code-structure)
+1. [Prerequisites](#prerequisites)
+2. [Initial Setup](#initial-setup)
+3. [Makefile Usage](#makefile-usage)
+4. [Docker Compose Commands](#docker-compose-commands)
+5. [Data Persistence](#data-persistence)
+6. [Architecture Overview](#architecture-overview)
+7. [Services Breakdown](#services-breakdown)
+8. [Network & Security](#network--security)
+9. [Development Workflow](#development-workflow)
+10. [Debugging Guide](#debugging-guide)
 
 ---
 
-## Architecture Overview
+## Prerequisites
+
+### System Requirements
+
+- **OS:** Linux (Ubuntu 20.04+ / Debian 11+ recommended)
+- **Architecture:** x86_64 or ARM64
+- **Disk Space:** Minimum 2GB free space
+- **RAM:** Minimum 2GB available
+
+### Required Software
+
+| Software | Minimum Version | Check Command |
+|----------|----------------|---------------|
+| Docker | 20.10+ | `docker --version` |
+| Docker Compose | 2.0+ | `docker compose version` |
+| Make | 4.0+ | `make --version` |
+| OpenSSL | 1.1.1+ | `openssl version` |
+| Git | 2.25+ | `git --version` |
+
+### Installation
+
+**Ubuntu/Debian:**
+```bash
+# Update package index
+sudo apt update
+
+# Install Docker
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+newgrp docker
+
+# Install Make and OpenSSL
+sudo apt install -y make openssl
+
+# Verify installations
+docker --version
+docker compose version
+make --version
+```
+
+### Permissions
+
+- **Docker:** User must be in `docker` group
+- **Hosts file:** Sudo access required for `/etc/hosts` modification
+- **Data directories:** Write access to `/home/$USER/data/`
+
+---
+
+## Initial Setup
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/kabasolo04/Inception.git
+cd Inception
+```
+
+### 2. Project Structure Overview
+
+```
+Inception/
+├── Makefile                   # Build automation
+├── README.md                  # Project overview
+├── USER_DOC.md               # End-user documentation
+├── DEV_DOC.md                # This file
+├── secrets/                   # Credentials (generated)
+│   ├── credentials.txt        # WordPress users
+│   ├── db_password.txt        # DB user password
+│   └── db_root_password.txt   # DB root password
+└── srcs/
+    ├── .env                   # Environment variables
+    ├── docker-compose.yml     # Container orchestration
+    └── requirements/          # Service definitions
+        ├── nginx/
+        ├── wordpress/
+        └── mariadb/
+```
+
+### 3. Automated Setup
+
+```bash
+make setup
+```
+
+This executes three targets:
+1. `make host` - Adds domain to `/etc/hosts`
+2. `make env` - Creates `srcs/.env` with default values
+3. `make secrets` - Generates random passwords
+
+### 4. Manual Setup (Optional)
+
+If you prefer manual control:
+
+```bash
+# Add domain to hosts
+echo "127.0.0.1 kabasolo.42.fr" | sudo tee -a /etc/hosts
+
+# Create environment file
+cat > srcs/.env << EOF
+DB_NAME=wordpress
+DB_USER=wpuser
+DB_HOST=mariadb
+DOMAIN_NAME=kabasolo.42.fr
+WP_TITLE=mySite
+EOF
+
+# Create secrets directory
+mkdir -p secrets
+
+# Generate passwords
+openssl rand -base64 16 > secrets/db_root_password.txt
+openssl rand -base64 16 > secrets/db_password.txt
+
+# Create WordPress credentials
+cat > secrets/credentials.txt << EOF
+WP_USER_NAME=your_username
+WP_USER_EMAIL=your@email.com
+WP_USER_PASSWORD=$(openssl rand -base64 12)
+WP_ADMIN_USER=admin_user
+WP_ADMIN_EMAIL=admin@email.com
+WP_ADMIN_PASSWORD=$(openssl rand -base64 12)
+EOF
+```
+
+### 5. Build and Start
+
+```bash
+make up
+```
+
+First build takes 2-5 minutes to:
+- Download Alpine base images
+- Install packages
+- Build custom images
+- Create containers
+- Initialize database
+- Install WordPress
+
+---
+
+## Makefile Usage
+
+### Setup Targets
+
+| Target | Description | Usage |
+|--------|-------------|-------|
+| `make setup` | Complete automated setup | Initial configuration |
+| `make host` | Add domain to `/etc/hosts` | Domain configuration |
+| `make env` | Generate `srcs/.env` file | Environment setup |
+| `make secrets` | Create secrets with random passwords | Credential generation |
+
+### Container Management
+
+| Target | Description | Use Case |
+|--------|-------------|----------|
+| `make up` | Build and start containers | First run or after `down` |
+| `make start` | Start existing containers | Resume after `stop` |
+| `make stop` | Stop running containers | Temporary pause |
+| `make down` | Stop and remove containers | Clean shutdown |
+| `make restart` | Stop then start containers | Apply configuration changes |
+
+### Cleanup Targets
+
+| Target | Description | What Gets Removed |
+|--------|-------------|-------------------|
+| `make clean` | Basic cleanup | Containers + Docker volumes |
+| `make fclean` | Full cleanup | + Images + host data directories |
+| `make nuke` | Nuclear option | Containers + volumes + orphans |
+
+### Rebuild Targets
+
+| Target | Description | Use Case |
+|--------|-------------|----------|
+| `make re` | fclean + up | Complete rebuild |
+| `make rebuild` | fclean + all | Full reset with fresh setup |
+
+### Implementation Details
+
+**Key Makefile Variables:**
+```makefile
+SRCSDIR := srcs
+COMPOSE := docker compose -f $(SRCSDIR)/docker-compose.yml
+ENV := --env-file $(SRCSDIR)/.env
+HOST := kabasolo.42.fr
+```
+
+**Example Target:**
+```makefile
+up:
+	@echo "🟢 Starting containers..."
+	@$(COMPOSE) $(ENV) up -d --build
+```
+
+---
+
+## Docker Compose Commands
+
+### Direct Docker Compose Usage
+
+When you need more control than Makefile provides:
+
+```bash
+# Base command
+docker compose -f srcs/docker-compose.yml --env-file srcs/.env <command>
+```
+
+### Common Commands
+
+**Build and Start:**
+```bash
+# Build all services
+docker compose -f srcs/docker-compose.yml build
+
+# Build specific service
+docker compose -f srcs/docker-compose.yml build nginx
+
+# Start services
+docker compose -f srcs/docker-compose.yml up -d
+
+# Start with rebuild
+docker compose -f srcs/docker-compose.yml up -d --build
+```
+
+**Container Management:**
+```bash
+# List running containers
+docker compose -f srcs/docker-compose.yml ps
+
+# Stop services
+docker compose -f srcs/docker-compose.yml stop
+
+# Start stopped services
+docker compose -f srcs/docker-compose.yml start
+
+# Restart specific service
+docker compose -f srcs/docker-compose.yml restart nginx
+```
+
+**Logs and Debugging:**
+```bash
+# View all logs
+docker compose -f srcs/docker-compose.yml logs
+
+# Follow logs in real-time
+docker compose -f srcs/docker-compose.yml logs -f
+
+# Logs for specific service
+docker compose -f srcs/docker-compose.yml logs mariadb
+
+# Last 50 lines
+docker compose -f srcs/docker-compose.yml logs --tail=50
+```
+
+**Cleanup:**
+```bash
+# Stop and remove containers
+docker compose -f srcs/docker-compose.yml down
+
+# Remove containers and volumes
+docker compose -f srcs/docker-compose.yml down -v
+
+# Remove containers, volumes, and orphans
+docker compose -f srcs/docker-compose.yml down -v --remove-orphans
+```
+
+**Executing Commands:**
+```bash
+# Execute command in running container
+docker compose -f srcs/docker-compose.yml exec nginx sh
+
+# Run one-off command
+docker compose -f srcs/docker-compose.yml run --rm wordpress ls -la /var/www/html
+```
+
+### Service-Specific Operations
+
+**Rebuild single service:**
+```bash
+docker compose -f srcs/docker-compose.yml stop nginx
+docker compose -f srcs/docker-compose.yml rm -f nginx
+docker compose -f srcs/docker-compose.yml build nginx
+docker compose -f srcs/docker-compose.yml up -d nginx
+```
+
+**Scale services (if applicable):**
+```bash
+docker compose -f srcs/docker-compose.yml up -d --scale wordpress=2
+```
+
+---
+
+## Data Persistence
+
+### Volume Strategy
+
+This project uses **host bind mounts** instead of named Docker volumes for easier access and backup.
+
+### Data Locations
+
+| Service | Container Path | Host Path | Purpose |
+|---------|---------------|-----------|---------|
+| WordPress | `/var/www/html` | `/home/$USER/data/web` | WordPress files, themes, plugins |
+| MariaDB | `/var/lib/mysql` | `/home/$USER/data/database` | Database files |
+
+### docker-compose.yml Configuration
+
+```yaml
+services:
+  wordpress:
+    volumes:
+      - /home/${USER}/data/web:/var/www/html
+  
+  mariadb:
+    volumes:
+      - /home/${USER}/data/database:/var/lib/mysql
+```
+
+### Data Lifecycle
+
+**On first `make up`:**
+```bash
+# Directories are created automatically
+mkdir -p /home/$USER/data/web
+mkdir -p /home/$USER/data/database
+
+# WordPress installation populates /data/web/
+# MariaDB initialization populates /data/database/
+```
+
+**Data persists through:**
+- `make stop` / `make start`
+- `make down` / `make up`
+- Container crashes/restarts
+
+**Data is removed by:**
+- `make fclean` (deletes host directories)
+- Manual deletion: `sudo rm -rf ~/data/`
+---
+
+## Architecture Overviewker exec mariadb mysqldump -u root -p$(cat secrets/db_root_password.txt) wordpress > backup.sql
+```
+
+**Import database:**
+```bash
+cat backup.sql | docker exec -i mariadb mysql -u root -p$(cat secrets/db_root_password.txt) wordpress
+```
+
+### File Permissions
+
+**Checking ownership:**
+```bash
+ls -ld ~/data/web/
+ls -ld ~/data/database/
+```
+
+**Fixing permissions:**
+```bash
+# WordPress files should be writable by www-data (container user)
+sudo chown -R $(id -u):$(id -g) ~/data/web/
+
+# Database files owned by mysql user (mapped to host UID)
+sudo chown -R $(id -u):$(id -g) ~/data/database/
+```
 
 The Inception project implements a **three-tier microservices architecture** using Docker containers:
 
@@ -264,9 +627,204 @@ make re       # Rebuild from scratch
 
 ### Build Order
 
-1. MariaDB (no dependencies)
-2. WordPress (depends on MariaDB)
-3. NGINX (depends on WordPress)
+Docker Compose respects `depends_on` directives:
+
+1. **MariaDB** (no dependencies)
+2. **WordPress** (depends on MariaDB)
+3. **NGINX** (depends on WordPress)
+
+---
+
+## Network & Security
+
+### Network Configuration
+
+```yaml
+networks:
+  inception_network:
+    driver: bridge
+```
+
+**Features:**
+- Isolated bridge network
+- Automatic DNS resolution (containers reach each other by service name)
+- No direct host network access
+
+**Testing connectivity:**
+```bash
+# From WordPress to MariaDB
+docker exec wp-php ping mariadb
+
+# From NGINX to WordPress
+docker exec nginx ping wp-php
+```
+
+### Security Implementation
+
+**1. TLS/SSL Encryption:**
+- Self-signed certificates generated on first run
+- Certificate location: `/etc/nginx/ssl/` in nginx container
+- HTTPS only (port 443, no HTTP)
+
+**2. Docker Secrets:**
+```yaml
+secrets:
+  db_password:
+    file: ../secrets/db_password.txt
+  db_root_password:
+    file: ../secrets/db_root_password.txt
+```
+
+Secrets mounted at `/run/secrets/` inside containers (read-only).
+
+**3. Port Exposure:**
+- **NGINX:** 443 exposed to host
+- **WordPress:** 9000 internal only
+- **MariaDB:** 3306 internal only
+
+**4. Environment Variables:**
+Non-sensitive configuration in `srcs/.env`:
+```bash
+DB_NAME=wordpress      # Public
+DB_USER=wpuser         # Public
+DB_HOST=mariadb        # Public
+DOMAIN_NAME=kabasolo.42.fr
+WP_TITLE=mySite
+```
+
+Sensitive data in `secrets/` (gitignored):
+```bash
+DB_PASSWORD           # In db_password.txt
+DB_ROOT_PASSWORD      # In db_root_password.txt
+WP_*_PASSWORD         # In credentials.txt
+```
+
+---
+
+## Development Workflow
+
+### Typical Development Cycle
+
+**1. Make Configuration Changes:**
+```bash
+# Edit NGINX config
+vim srcs/requirements/nginx/conf/nginx.conf
+
+# Edit WordPress PHP settings
+vim srcs/requirements/wordpress/tools/php.ini
+
+# Edit MariaDB config
+vim srcs/requirements/mariadb/conf/db.conf
+```
+
+**2. Rebuild Affected Service:**
+```bash
+# Rebuild and restart specific service
+docker compose -f srcs/docker-compose.yml build nginx
+docker compose -f srcs/docker-compose.yml up -d nginx
+
+# Or use make
+make re
+```
+
+**3. Test Changes:**
+```bash
+# Check logs for errors
+docker compose -f srcs/docker-compose.yml logs nginx
+
+# Test endpoint
+curl -k https://kabasolo.42.fr
+```
+
+**4. Debug if Needed:**
+```bash
+# Enter container
+docker exec -it nginx sh
+
+# Check configuration
+nginx -t
+
+# View running processes
+ps aux
+```
+
+### Working with WordPress Files
+
+WordPress files are directly accessible on the host:
+
+```bash
+# Edit theme files
+vim ~/data/web/wp-content/themes/your-theme/style.css
+
+# Install plugin manually
+cd ~/data/web/wp-content/plugins/
+wget https://downloads.wordpress.org/plugin/your-plugin.zip
+unzip your-plugin.zip
+```
+
+Changes reflect immediately (no container rebuild needed).
+
+### Database Development
+
+**Access MySQL shell:**
+```bash
+docker exec -it mariadb mysql -u root -p$(cat secrets/db_root_password.txt)
+```
+
+**Common queries:**
+```sql
+-- Show databases
+SHOW DATABASES;
+
+-- Use WordPress database
+USE wordpress;
+
+-- Show tables
+SHOW TABLES;
+
+-- View users
+SELECT * FROM wp_users;
+
+-- Update admin email
+UPDATE wp_users SET user_email='new@email.com' WHERE user_login='admin';
+```
+
+### Hot Reload vs Rebuild Required
+
+| Change Type | Hot Reload | Rebuild Required |
+|-------------|------------|------------------|
+| WordPress PHP files | ✅ | ❌ |
+| WordPress themes/plugins | ✅ | ❌ |
+| NGINX config files | ❌ | ✅ restart nginx |
+| PHP-FPM config | ❌ | ✅ restart wordpress |
+| MariaDB config | ❌ | ✅ restart mariadb |
+| Dockerfile changes | ❌ | ✅ rebuild image |
+| docker-compose.yml | ❌ | ✅ down + up |
+
+### Version Control
+
+**.gitignore should include:**
+```gitignore
+secrets/
+srcs/.env
+.DS_Store
+```
+
+**Commit workflow:**
+```bash
+# Check status
+git status
+
+# Add changes (excluding secrets)
+git add srcs/requirements/
+git add Makefile README.md
+
+# Commit
+git commit -m "Updated nginx configuration"
+
+# Push
+git push origin main
+```
 
 ---
 

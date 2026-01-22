@@ -4,155 +4,132 @@
 
 ## Welcome! 👋
 
-This guide will help you set up and use the Inception WordPress infrastructure. No Docker expertise required - just follow the steps!
+This guide provides **basic usage instructions** for administrators managing the Inception WordPress infrastructure.
 
 ---
 
-## 🎯 Quick Start
+## 🎯 Quick Reference
 
-### Prerequisites
-
-- **Operating System:** Linux (Ubuntu/Debian recommended)
-- **Required Software:** 
-  - Docker (20.10+)
-  - Docker Compose (2.0+)
-  - Make
-  - OpenSSL
-- **Permissions:** sudo access for host file modification
-
-### Installation Check
+### Start the Stack
 
 ```bash
-# Verify Docker is installed
-docker --version
-docker compose version
-
-# Verify Make is installed
-make --version
+make up      # First time or after 'make down'
+make start   # Resume stopped containers
 ```
+
+### Stop the Stack
+
+```bash
+make stop    # Pause (keeps data)
+make down    # Stop and remove containers
+```
+
+### Access Points
+
+- **Website:** https://kabasolo.42.fr
+- **Admin Panel:** https://kabasolo.42.fr/wp-admin
 
 ---
 
-## 🚀 Getting Started
+## � Starting the Stack
 
-### Step 1: Clone the Project
+### First Time Setup
 
-```bash
-git clone https://github.com/kabasolo04/Inception.git
-cd Inception
-```
-
-### Step 2: Automatic Setup (Recommended)
-
-```bash
-make setup
-```
-
-This single command will:
-- Add `kabasolo.42.fr` to your `/etc/hosts` file
-- Generate environment variables in `srcs/.env`
-- Create secure random passwords in `secrets/` folder
-
-### Step 3: Review Credentials
-
-Open `secrets/credentials.txt` and verify your WordPress users:
-
-```
-WP_USER_NAME=example
-WP_USER_EMAIL=example@example.com
-WP_USER_PASSWORD=<randomly-generated>
-WP_ADMIN_USER=example
-WP_ADMIN_EMAIL=example@example.com
-WP_ADMIN_PASSWORD=<randomly-generated>
-```
-
-**⚠️ Important:** Replace `example` values with your actual username and email before running `make up`!
-
-**💡 Tip:** Save these credentials somewhere safe! You'll need them to log into WordPress.
-
-### Step 4: Launch Your Infrastructure
+If this is your first time, the infrastructure needs to be built:
 
 ```bash
 make up
 ```
 
-This command will:
-- Build all Docker images (NGINX, WordPress, MariaDB)
-- Create containers and network
-- Initialize the database
-- Install WordPress
-- Generate SSL certificates
+**⏱️ This takes 2-5 minutes** - it builds Docker images, creates containers, initializes the database, and installs WordPress.
 
-**⏱️ Note:** First build takes 2-5 minutes depending on your internet speed.
+### Subsequent Starts
 
-### Step 5: Access Your Website
+If you've stopped the stack and want to resume:
 
-Open your browser and navigate to:
+```bash
+make start
+```
 
+**⏱️ This takes a few seconds** - containers already exist and just need to start.
+
+---
+
+## 🛑 Stopping the Stack
+
+### Temporary Stop (Preserves Data)
+
+```bash
+make stop
+```
+
+Use this for **daily shutdown**. All your data remains intact.
+
+### Complete Shutdown
+
+```bash
+make down
+```
+
+Stops and removes containers. **Data persists** in volumes.
+
+---
+
+## 🌐 Accessing the Website
+
+### Main Website
+
+Open your browser:
 ```
 https://kabasolo.42.fr
 ```
 
-**🔒 SSL Warning:** You'll see a security warning because we're using a self-signed certificate. This is normal for development. Click "Advanced" → "Proceed to kabasolo.42.fr".
+**🔒 SSL Certificate Warning:**
+- You'll see a security warning (self-signed certificate)
+- Click **"Advanced"** → **"Proceed to kabasolo.42.fr"**
+- This is normal for development environments
 
----
+### Check Data Persistence
 
-## 📝 Logging In
-
-### WordPress Admin Dashboard
-
-1. Navigate to: `https://kabasolo.42.fr/wp-admin`
-2. Username: `example` (or your custom value from `WP_ADMIN_USER`)
-3. Password: Check `secrets/credentials.txt` for `WP_ADMIN_PASSWORD`
-
-### Regular User Account
-
-1. Navigate to: `https://kabasolo.42.fr/wp-login.php`
-2. Username: `example` (or your custom value from `WP_USER_NAME`)
-3. Password: Check `secrets/credentials.txt` for `WP_USER_PASSWORD`
-
----
-
-## 🎮 Managing Your Infrastructure
-
-### Common Commands
-
-| Command | What It Does | When To Use |
-|---------|--------------|-------------|
-| `make up` | Start everything from scratch | First time or after `make down` |
-| `make start` | Resume stopped containers | After `make stop` |
-| `make stop` | Pause containers (keeps data) | Temporary pause |
-| `make down` | Stop and remove containers | Clean shutdown |
-| `make clean` | Remove containers + volumes | Reset but keep images |
-| `make fclean` | Full cleanup | Start completely fresh |
-| `make re` | Rebuild everything | After changing Dockerfiles |
-
-### Typical Workflows
-
-#### Daily Use
+Your data is stored in:
 
 ```bash
-# Morning - Start your work
-make start
+# WordPress files
+ls -lh ~/data/web/
 
-# Evening - Stop for the day
-make stop
+# Database files
+ls -lh ~/data/database/
 ```
 
-#### Fresh Install
-
-```bash
-# Complete reset and rebuild
-make fclean
-make setup
-make up
+These directories should exist and contain files when the stack is running.
+# Check specific container
+docker ps | grep nginx
+docker ps | grep wp-php
+docker ps | grep mariadb
 ```
 
-#### Testing Changes
+### Verify Website Accessibility
 
 ```bash
-# After modifying configuration
-make re
+# Test HTTPS connection
+curl -k https://kabasolo.42.fr
+
+# Should return HTML content
+```
+
+### Check Logs for Errors
+
+```bash
+# View all logs
+docker compose -f srcs/docker-compose.yml logs
+
+# View specific service logs
+docker compose -f srcs/docker-compose.yml logs nginx
+docker compose -f srcs/docker-compose.yml logs wp-php
+docker compose -f srcs/docker-compose.yml logs mariadb
+
+# Follow logs in real-time
+docker compose -f srcs/docker-compose.yml logs -f
 ```
 
 ---
@@ -313,160 +290,75 @@ Find what's using the port:
 sudo lsof -i :443
 ```
 
-Stop the conflicting service or change Inception's port in docker-compose.yml.
+Stop tCommon Issues
 
-### Problem: Permission Denied on Data Folders
+### Can't Access Website
 
-**Symptom:** Can't write to `/home/<user>/data/`
+**Check:**
+1. Containers running: `docker ps` (should show 3 containers)
+2. Domain configured: `cat /etc/hosts | grep kabasolo`
+3. Port available: `sudo lsof -i :443`
 
-**Solution:**
-
+**Fix:** Restart the stack
 ```bash
-sudo chown -R $USER:$USER ~/data/
+make down
+make up
 ```
 
-### Problem: Forgot WordPress Password
+### SSL Certificate Warning
 
-**Solution:**
+This is **normal** for self-signed certificates in development.
 
-Check your credentials file:
+**To proceed:**
+- Chrome/Edge: "Advanced" → "Proceed to kabasolo.42.fr"
+- Firefox: "Advanced" → "Accept the Risk and Continue"
+
+### Database Connection Error
+
+**Check credentials match:**
+```bash
+docker exec -it wp-php cat /run/secrets/db_password
+docker exec -it mariadb cat /run/secrets/db_password
+```
+
+**Fix:** Restart services
+```bash
+make down && make up
+```
+
+### Forgot Password
+
+View your credentials:
 ```bash
 cat secrets/credentials.txt
 ```
 
-Or reset by rebuilding:
+### Port Already in Use
+
+Find conflicting process:
 ```bash
-make fclean
-make setup
-make up
+sudo lsof -i :443
+```
+
+Stop it or rebuild Inception:
+```bash
+make down && make up
 ```
 
 ---
 
-## 🔐 Security Notes
+## 📞 Support
 
-### Passwords
-
-- Never commit the `secrets/` folder to git
-- Store credentials securely (password manager recommended)
-- Passwords are randomly generated 12-16 character base64 strings
-
-### SSL/TLS
-
-- Uses self-signed certificates (fine for development)
-- For production, use Let's Encrypt or proper CA certificates
-- TLS 1.2 and 1.3 enabled
-
-### Network
-
-- Only port 443 exposed to host machine
-- Database and WordPress communicate via internal Docker network
-- No direct database access from outside
-
----
-
-## 💡 Tips & Best Practices
-
-### Backups
-
-Your data persists in `/home/<user>/data/`. To backup:
+When reporting issues, include:
 
 ```bash
-# Backup WordPress files
-tar -czf wordpress-backup.tar.gz ~/data/web/
-
-# Backup database
-tar -czf database-backup.tar.gz ~/data/database/
-```
-
-### Performance
-
-- First load may be slow as WordPress generates cache
-- Subsequent loads are faster
-- Consider increasing PHP memory limit in `srcs/requirements/wordpress/php.ini`
-
-### Development
-
-- Edit WordPress files directly in `~/data/web/`
-- Changes reflect immediately (no rebuild needed)
-- Theme/plugin changes persist across restarts
-
-### Updating WordPress
-
-WordPress will auto-update via the admin panel. Docker containers don't need rebuilding for WP updates.
-
----
-
-## 📞 Getting Help
-
-### Useful Commands for Support
-
-When asking for help, provide output from:
-
-```bash
-# System info
-docker --version
-docker compose version
-uname -a
-
 # Container status
 docker ps -a
 
 # Recent logs
-docker compose -f srcs/docker-compose.yml logs --tail=50
+docker compose -f srcs/docker-compose.yml logs --tail=30
 ```
 
-### Log Files Location
-
-Inside containers:
-- **NGINX:** `/var/log/nginx/`
-- **PHP-FPM:** `/var/log/php8/`
-- **MariaDB:** `/var/log/mysql/`
-
 ---
 
-## 🎓 Learning More
-
-### Understanding the Stack
-
-- **NGINX:** Web server handling HTTPS requests
-- **WordPress:** Content management system
-- **MariaDB:** Database storing WordPress data
-- **PHP-FPM:** Executes PHP code for WordPress
-
-### Docker Concepts
-
-- **Container:** Isolated running instance of an image
-- **Image:** Template for creating containers
-- **Volume:** Persistent storage for container data
-- **Network:** Virtual network connecting containers
-- **Secret:** Secure way to store passwords
-
----
-
-## ✅ Checklist for Success
-
-Before starting:
-- [ ] Docker installed and running
-- [ ] Make is available
-- [ ] Have sudo access
-- [ ] Ports 443 is free
-
-After `make setup`:
-- [ ] `secrets/` folder exists
-- [ ] `srcs/.env` file created
-- [ ] `/etc/hosts` contains kabasolo.42.fr
-
-After `make up`:
-- [ ] Three containers running (`docker ps`)
-- [ ] Can access https://kabasolo.42.fr
-- [ ] Can log into WordPress admin
-- [ ] Data folders exist in `~/data/`
-
----
-
-## 🎉 You're All Set!
-
-Your WordPress infrastructure is now running! Start creating content, installing themes, and building your site.
-
-**Happy coding! 🚀**
+**That's it! Your WordPress stack is ready to use. 🎉
