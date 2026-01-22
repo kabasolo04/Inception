@@ -5,10 +5,10 @@ RUN mkdir -p /run/mysqld && chown -R mysql:mysql /run/mysqld
 
 COPY conf/db.conf /etc/my.cnf.d/mariadb-server.cnf
 
-COPY script.sh .
+COPY tools/script.sh .
 RUN chmod +x /script.sh
 
 # Expose port (optional if using docker-compose networks)
 EXPOSE 3306
 
-ENTRYPOINT ["./tools/script.sh"]
+ENTRYPOINT ["./script.sh"]
