@@ -9,7 +9,7 @@
 ## 📖 Index
 
 - [📦 Description](#-description)
-- [🏁 Introduction](#-introduction)
+- [🏁 Instructions](#-instructions)
 - [📚 Resources](#-resources)
 - [🤖 AI Usage](#-ai-usage)
 
@@ -37,7 +37,7 @@ For data persistence, **Docker volumes** are used instead of bind mounts. Volume
 
 ---
 
-## 🏁 Introduction
+## 🏁 Instructions
 
 ### `Automatic setup:`
 | Command    | Description |
